@@ -1,60 +1,60 @@
 {
-	"products": [
-		{
-			"title": "여우 키링 ver.1",
-			"price": "8,500원",
-			"aria-label": "제품: 투명 아크릴 여우 키링, 가격: 8,500원, 인쇄면이 벗겨질 걱정이 없는 라미 키링이에요. 자물쇠형 고리로 어디든 편리하게 달 수 있어요.",
-			"img": "https://shop-phinf.pstatic.net/20240815_232/1723652284673PYL4T_JPEG/11545780743261747_2062117302.jpg?type=m510",
-			"link": "https://smartstore.naver.com/fox_shop/products/10737876697"
-		},
-		{
-			"title": "책갈피 카드 - 쭉쭉이 그냥이",
-			"price": "2,000원",
-			"aria-label": "제품: 책갈피 카드 쭉쭉이 그냥이, 가격: 2,000원, 책갈피로 사용하다가 인상적인 글귀가 있으면 볼펜을 들고 남겨보아요.",
-			"img": "https://shop-phinf.pstatic.net/20241127_169/1732639590933nIr2x_JPEG/8634090068032812_1830922759.jpg?type=m510",
-			"link": "https://smartstore.naver.com/fox_shop/products/11181103683"
-		},
-		{
-			"title": "책갈피 카드 - 쭉쭉이 여우",
-			"price": "2,000원",
-			"aria-label": "제품: 책갈피 카드 쭉쭉이 여우, 가격: 2,000원, 책갈피로 사용하다가 인상적인 글귀가 있으면 볼펜을 들고 남겨보아요.",
-			"img": "https://shop-phinf.pstatic.net/20241127_255/1732639087010Nkw4K_JPEG/15868940758869721_75374550.jpg?type=m510",
-			"link": "https://smartstore.naver.com/fox_shop/products/11181092618"
-		},
-		{
-			"title": "떡메모지 - 그냐아아아앙",
-			"price": "1,500원",
-			"aria-label": "제품: 떡메모지 그냐아아아앙, 가격: 1,500원, 간단한 메모나 낙서, 체크리스트 등 자유롭게 기록해보세요.",
-			"img": "https://shop-phinf.pstatic.net/20241127_161/1732638428441HdiI9_JPEG/19375648330286578_1773437359.jpg?type=m510",
-			"link": "https://smartstore.naver.com/fox_shop/products/11181026613"
-		},
-		{
-			"title": "떡메모지 - 여우와아앙",
-			"price": "1,500원",
-			"aria-label": "제품: 떡메모지 여우와아앙, 가격: 1,500원, 간단한 메모나 낙서, 체크리스트 등 자유롭게 기록해보세요.",
-			"img": "https://shop-phinf.pstatic.net/20241127_245/17326376408428M4Qx_JPEG/8255696271321497_1810173920.jpg?type=m510",
-			"link": "https://smartstore.naver.com/fox_shop/products/11180864427"
-		},
-		{
-			"title": "크리스마스 카드 - 여우는 산타에요",
-			"price": "3,000원",
-			"aria-label": "제품: 크리스마스 카드 여우는 산타에요, 가격: 3,000원, 주변 지인들에게 반가운 크리스마스 인사를 전해보세요! 형압 후 가공으로 테두리가 올록볼록해 재미있어요.",
-			"img": "https://shop-phinf.pstatic.net/20241117_224/17318535130210mUzN_JPEG/65986380062909794_307518623.jpg?type=m510",
-			"link": "https://smartstore.naver.com/fox_shop/products/11143380313"
-		},
-		{
-			"title": "크리스마스 카드 - 그냥이는 트리에요",
-			"price": "2,500원",
-			"aria-label": "제품: 크리스마스 카드 그냥이는 트리에요, 가격: 2,500원, 주변 지인들에게 반가운 크리스마스 인사를 전해보세요! 형압 후 가공으로 테두리가 올록볼록해 재미있어요.",
-			"img": "https://shop-phinf.pstatic.net/20241117_15/1731852426534EGlhs_JPEG/55830388254149895_1773004131.jpg?type=m510",
-			"link": "https://smartstore.naver.com/fox_shop/products/11143374764"
-		},
-		{
-			"title": "그냥이 키링 ver.1",
-			"price": "8,500원",
-			"aria-label": "제품: 투명 아크릴 그냥이 키링, 가격: 8,500원, 인쇄면이 벗겨질 걱정이 없는 라미 키링이에요. 자물쇠형 고리로 어디든 편리하게 달 수 있어요.",
-			"img": "https://shop-phinf.pstatic.net/20240815_90/1723652164490IeuA2_JPEG/11545660582971643_1179137571.jpg?type=m510",
-			"link": "https://smartstore.naver.com/fox_shop/products/10738031731"
-		}
-	]
+  "products": [
+    {
+      "title": "여우 키링 ver.1",
+      "price": "8,500원",
+      "aria-label": "제품: 투명 아크릴 여우 키링, 가격: 8,500원, 인쇄면이 벗겨질 걱정이 없는 라미 키링이에요. 자물쇠형 고리로 어디든 편리하게 달 수 있어요.",
+      "img": "https://shop-phinf.pstatic.net/20240815_232/1723652284673PYL4T_JPEG/11545780743261747_2062117302.jpg?type=m510",
+      "link": "https://smartstore.naver.com/fox_shop/products/10737876697"
+    },
+    {
+      "title": "책갈피 카드 - 쭉쭉이 그냥이",
+      "price": "2,000원",
+      "aria-label": "제품: 책갈피 카드 쭉쭉이 그냥이, 가격: 2,000원, 책갈피로 사용하다가 인상적인 글귀가 있으면 볼펜을 들고 남겨보아요.",
+      "img": "https://shop-phinf.pstatic.net/20241127_169/1732639590933nIr2x_JPEG/8634090068032812_1830922759.jpg?type=m510",
+      "link": "https://smartstore.naver.com/fox_shop/products/11181103683"
+    },
+    {
+      "title": "책갈피 카드 - 쭉쭉이 여우",
+      "price": "2,000원",
+      "aria-label": "제품: 책갈피 카드 쭉쭉이 여우, 가격: 2,000원, 책갈피로 사용하다가 인상적인 글귀가 있으면 볼펜을 들고 남겨보아요.",
+      "img": "https://shop-phinf.pstatic.net/20241127_255/1732639087010Nkw4K_JPEG/15868940758869721_75374550.jpg?type=m510",
+      "link": "https://smartstore.naver.com/fox_shop/products/11181092618"
+    },
+    {
+      "title": "떡메모지 - 그냐아아아앙",
+      "price": "1,500원",
+      "aria-label": "제품: 떡메모지 그냐아아아앙, 가격: 1,500원, 간단한 메모나 낙서, 체크리스트 등 자유롭게 기록해보세요.",
+      "img": "https://shop-phinf.pstatic.net/20241127_161/1732638428441HdiI9_JPEG/19375648330286578_1773437359.jpg?type=m510",
+      "link": "https://smartstore.naver.com/fox_shop/products/11181026613"
+    },
+    {
+      "title": "떡메모지 - 여우와아앙",
+      "price": "1,500원",
+      "aria-label": "제품: 떡메모지 여우와아앙, 가격: 1,500원, 간단한 메모나 낙서, 체크리스트 등 자유롭게 기록해보세요.",
+      "img": "https://shop-phinf.pstatic.net/20241127_245/17326376408428M4Qx_JPEG/8255696271321497_1810173920.jpg?type=m510",
+      "link": "https://smartstore.naver.com/fox_shop/products/11180864427"
+    },
+    {
+      "title": "크리스마스 카드 - 여우는 산타에요",
+      "price": "3,000원",
+      "aria-label": "제품: 크리스마스 카드 여우는 산타에요, 가격: 3,000원, 주변 지인들에게 반가운 크리스마스 인사를 전해보세요! 형압 후 가공으로 테두리가 올록볼록해 재미있어요.",
+      "img": "https://shop-phinf.pstatic.net/20241117_224/17318535130210mUzN_JPEG/65986380062909794_307518623.jpg?type=m510",
+      "link": "https://smartstore.naver.com/fox_shop/products/11143380313"
+    },
+    {
+      "title": "크리스마스 카드 - 그냥이는 트리에요",
+      "price": "2,500원",
+      "aria-label": "제품: 크리스마스 카드 그냥이는 트리에요, 가격: 2,500원, 주변 지인들에게 반가운 크리스마스 인사를 전해보세요! 형압 후 가공으로 테두리가 올록볼록해 재미있어요.",
+      "img": "https://shop-phinf.pstatic.net/20241117_15/1731852426534EGlhs_JPEG/55830388254149895_1773004131.jpg?type=m510",
+      "link": "https://smartstore.naver.com/fox_shop/products/11143374764"
+    },
+    {
+      "title": "그냥이 키링 ver.1",
+      "price": "8,500원",
+      "aria-label": "제품: 투명 아크릴 그냥이 키링, 가격: 8,500원, 인쇄면이 벗겨질 걱정이 없는 라미 키링이에요. 자물쇠형 고리로 어디든 편리하게 달 수 있어요.",
+      "img": "https://shop-phinf.pstatic.net/20240815_90/1723652164490IeuA2_JPEG/11545660582971643_1179137571.jpg?type=m510",
+      "link": "https://smartstore.naver.com/fox_shop/products/10738031731"
+    }
+  ]
 }

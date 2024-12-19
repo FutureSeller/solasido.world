@@ -4,64 +4,54 @@ import data from "../data/products.json";
 
 <!doctype html>
 <html lang="ko">
-	<head>
-		<meta charset="UTF-8" />
-		<meta name="viewport" content="width=device-width, initial-scale=1" />
-		<link rel="icon" href="/icon.ico" />
-		<link rel="preconnect" href="https://shop-phinf.pstatic.net">
-		<meta name="generator" content={Astro.generator} />
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="icon" href="/icon.ico" />
+    <link rel="preconnect" href="https://shop-phinf.pstatic.net">
+    <meta name="generator" content={Astro.generator} />
 
-		<meta name="description" content="우당탕탕 여우의 반짝반짝 잡화점이에요. 일상의 작은 행복을 위한 물건들을 세상에 선보이고 있어요."/>
-		<meta name="keywords" content="문구, 키링, 떡메모지, 엽서"/>
-		<meta property="og:title" content="여우 잡화점">
-		<meta property="og:image" content="https://shop-phinf.pstatic.net/20240809_148/17231821430408nQ9s_JPEG/34871431126363957_2047017963.jpg?type=o1000">
-		<meta property="og:description" content="우당탕탕 여우의 반짝반짝 잡화점이에요. 일상의 작은 행복을 위한 물건들을 세상에 선보이고 있어요."/>
-		<meta property="og:type" content="article">
-		<meta name="twitter:title" content="여우 잡화점">
-		<meta name="twitter:image" content="https://shop-phinf.pstatic.net/20240809_148/17231821430408nQ9s_JPEG/34871431126363957_2047017963.jpg?type=o1000">
-		<meta name="twitter:description" content="우당탕탕 여우의 반짝반짝 잡화점이에요. 일상의 작은 행복을 위한 물건들을 세상에 선보이고 있어요."/>
-		<meta name="twitter:card" content="summary_large_image">
-
-		<title>여우 잡화점</title>
-
-		<!-- Google tag (gtag.js) -->
-		<script
-			is:inline
-			src="https://www.googletagmanager.com/gtag/js?id=G-XXXXXXXXXX"
-		></script>
+    <meta name="description" content="우당탕탕 여우의 반짝반짝 잡화점이에요. 일상의 작은 행복을 위한 물건들을 세상에 선보이고 있어요."/>
+    <meta name="keywords" content="문구, 키링, 떡메모지, 엽서"/>
+    <meta property="og:title" content="여우 잡화점">
+    <meta property="og:image" content="https://shop-phinf.pstatic.net/20240809_148/17231821430408nQ9s_JPEG/34871431126363957_2047017963.jpg?type=o1000">
+    <meta property="og:description" content="우당탕탕 여우의 반짝반짝 잡화점이에요. 일상의 작은 행복을 위한 물건들을 세상에 선보이고 있어요."/>
+    <meta property="og:type" content="article">
+    <meta name="twitter:title" content="여우 잡화점">
+    <meta name="twitter:image" content="https://shop-phinf.pstatic.net/20240809_148/17231821430408nQ9s_JPEG/34871431126363957_2047017963.jpg?type=o1000">
+    <meta name="twitter:description" content="우당탕탕 여우의 반짝반짝 잡화점이에요. 일상의 작은 행복을 위한 물건들을 세상에 선보이고 있어요."/>
+    <meta name="twitter:card" content="summary_large_image">
+    <title>여우 잡화점</title>
+		<script is:inline src="https://www.googletagmanager.com/gtag/js?id=G-XXXXXXXXXX"></script>
 		<script is:inline>
-			window.dataLayer = window.dataLayer || [];
-			function gtag(){dataLayer.push(arguments);}
-			gtag('js', new Date());
-  		gtag('config', 'G-2QVWJPHFQC');
+		window.dataLayer = window.dataLayer || [];
+		function gtag(){dataLayer.push(arguments);}
+		gtag('js', new Date());
+		gtag('config', 'G-2QVWJPHFQC');
 		</script>
-	</head>
-	<body>
-		<main class="container">
+  </head>
+  <body>
+    <main class="container">
 			<header class="header">
 				<h1 class="title">
-					<span class="visually-hidden">여우 잡화점</span>
+          <span class="visually-hidden">여우 잡화점</span>
 					<img src="https://shop-phinf.pstatic.net/20240809_143/1723183729586DNPOO_PNG/%BF%A9%BF%EC%C0%E2%C8%AD%C1%A1.png?type=w640" alt="">
 				</h1>
 			</header>
 			<section>
-				<ul class="grid">
+        <ul class="grid">
 					{data.products.map(product => {
 						return (
-							<li class="grid-item">
-								<article>
-									<a class="product-link" href={product.link} aria-labelledby={product.title}>
-										<img 
-											class="product-img"
-											src={product.img}
-											alt=""
-										/>
-										<h2 class="product-title" aria-hidden="true">{product.title}</h2>
-										<div aria-hidden="true">{product.price}</div>
-										<span class="visually-hidden" id={product.title}>{product["aria-label"]}</span>
-									</a>
-								</article>
-							</li>
+						<li class="grid-item">
+							  <article>
+								  <a class="product-link" href={product.link} aria-labelledby={product.title}>
+									  <img class="product-img" src={product.img} alt=""/>
+									  <h2 class="product-title" aria-hidden="true">{product.title}</h2>
+									  <div aria-hidden="true">{product.price}</div>
+									  <span class="visually-hidden" id={product.title}>{product["aria-label"]}</span>
+								  </a>
+							  </article>
+						  </li>
 						)
 					})}
 				</div>
@@ -71,111 +61,111 @@ import data from "../data/products.json";
 </html>
 
 <style>
-	html,
-	body {
-		margin: 0;
-		width: 100%;
-		height: 100%;
-	}
+html,
+body {
+  margin: 0;
+  width: 100%;
+  height: 100%;
+}
 
-	*,
-	*:before,
-	*:after { 
-		box-sizing: border-box; 
-		margin: 0;
-		padding: 0;
-		outline: 0; 
-	}
+*,
+*:before,
+*:after { 
+  box-sizing: border-box; 
+  margin: 0;
+  padding: 0;
+  outline: 0; 
+}
 
-	a {
-		text-decoration: none;
-		color: inherit;
-	}
+a {
+  text-decoration: none;
+  color: inherit;
+}
 
-	.visually-hidden {
-		position: absolute;
-		width: 1px;
-		height: 1px;
-		padding: 0;
-		margin: -1px;
-		overflow: hidden;
-		clip: rect(0, 0, 0, 0);
-		border: 0;
-		white-space: nowrap;
-	}
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  border: 0;
+  white-space: nowrap;
+}
 
-	.container {
-		min-width: 20rem;
-		max-width: 60rem;
-		padding: 0 1rem;
-		margin: 0 auto;
-	}
+.container {
+  min-width: 20rem;
+  max-width: 60rem;
+  padding: 0 1rem;
+  margin: 0 auto;
+}
 
-	.header {
-		padding: 4rem 0;
-	}
+.header {
+  padding: 4rem 0;
+}
 
-	.title {
-		display: flex;
-		justify-content: center;
-	}
+.title {
+  display: flex;
+  justify-content: center;
+}
 
-	.section-title {
-		display: flex;
-		justify-content: center;
-		font-size: 2rem;
-		padding: 2rem 0;
-	}
+.section-title {
+  display: flex;
+  justify-content: center;
+  font-size: 2rem;
+  padding: 2rem 0;
+}
 
-	.grid {
-    display: grid;
-    grid-template-columns: repeat(1, minmax(0, 1fr));
-    gap: 2rem;
-		padding-bottom: 5rem;
+.grid {
+  display: grid;
+  grid-template-columns: repeat(1, minmax(0, 1fr));
+  gap: 2rem;
+  padding-bottom: 5rem;
+}
+
+@media (min-width: 400px) {
+  .grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
   }
+}
 
-	@media (min-width: 400px) {
-		.grid {
-			grid-template-columns: repeat(2, minmax(0, 1fr));
-		}
-	}
+@media (min-width: 700px) {
+  .grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
 
-	@media (min-width: 700px) {
-		.grid {
-			grid-template-columns: repeat(3, minmax(0, 1fr));
-		}
-	}
+.grid-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 0.25rem;
+}
 
-	.grid-item {
-		display: flex;
-		flex-direction: column;
-		align-items: center;
-		padding: 0.25rem;
-	}
+.grid-item:focus-within {
+  outline: 2px solid #000;
+}
 
-	.grid-item:focus-within {
-		outline: 2px solid #000;
-	}
+.grid-item:hover {
+  outline: 2px solid #000;
+}
 
-	.grid-item:hover {
-		outline: 2px solid #000;
-	}
+.product-link {
+  text-align: center;
+}
 
-	.product-link {
-		text-align: center;
-	}
+.product-title {
+  font-size: 1rem;
+  font-weight: 700;
+  margin-bottom: 0.25rem;
+}
 
-	.product-title {
-		font-size: 1rem;
-		font-weight: 700;
-		margin-bottom: 0.25rem;
-	}
-
-	.product-img {
-		display: inline-block;
-		aspect-ratio: 1 / 1;
-		max-width: 100%;
-		height: auto;
-		margin-bottom: 1rem;
-	}
+.product-img {
+  display: inline-block;
+  aspect-ratio: 1 / 1;
+  max-width: 100%;
+  height: auto;
+  margin-bottom: 1rem;
+}
 </style>
