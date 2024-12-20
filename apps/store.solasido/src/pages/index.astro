@@ -35,7 +35,7 @@ import data from "../data/products.json";
 			<header class="header">
 				<h1 class="title">
           <span class="visually-hidden">여우 잡화점</span>
-					<img src="https://shop-phinf.pstatic.net/20240809_143/1723183729586DNPOO_PNG/%BF%A9%BF%EC%C0%E2%C8%AD%C1%A1.png?type=w640" alt="">
+					<img class="title-img" src="https://shop-phinf.pstatic.net/20240809_143/1723183729586DNPOO_PNG/%BF%A9%BF%EC%C0%E2%C8%AD%C1%A1.png?type=w640" alt="">
 				</h1>
 			</header>
 			<section>
@@ -110,6 +110,11 @@ a {
   justify-content: center;
 }
 
+.title-img {
+  width: 100%;
+	max-width: 360px;
+}
+
 .section-title {
   display: flex;
   justify-content: center;
@@ -147,8 +152,8 @@ a {
   outline: 2px solid #000;
 }
 
-.grid-item:hover {
-  outline: 2px solid #000;
+@media not all and (pointer: coarse) {
+	.grid-item:hover { outline: 2px solid #000; }
 }
 
 .product-link {
