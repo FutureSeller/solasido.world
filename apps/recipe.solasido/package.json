@@ -1,0 +1,36 @@
+{
+  "name": "@solasido/recipe",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "concurrently \"pnpm:dev:frontend\" \"pnpm:dev:api\"",
+    "dev:frontend": "vite",
+    "dev:api": "wrangler pages dev --proxy=http://localhost:5173/",
+    "build": "tsc --noEmit && vite build",
+    "preview": "wrangler pages dev dist",
+    "lint": "biome lint",
+    "format": "biome format --write",
+    "db:create": "wrangler d1 create recipe_db",
+    "db:delete:local": "rm -rf .wrangler/state",
+    "db:migrate:local": "wrangler d1 migrations apply recipe_db --local",
+    "db:migrate": "wrangler d1 migrations apply recipe_db --remote"
+  },
+  "dependencies": {
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1"
+  },
+  "devDependencies": {
+    "@biomejs/biome": "1.9.2",
+    "@cloudflare/workers-types": "^4.20250107.0",
+    "@tailwindcss/vite": "^4.1.18",
+    "@types/react": "^18.3.18",
+    "@types/react-dom": "^18.3.5",
+    "@vitejs/plugin-react": "^4.3.4",
+    "concurrently": "^9.2.1",
+    "tailwindcss": "^4.1.18",
+    "typescript": "^5.8.2",
+    "vite": "^6.0.0",
+    "wrangler": "^4.64.0"
+  }
+}

@@ -1,0 +1,8 @@
+name = "recipe-solasido"
+compatibility_date = "2026-02-11"
+pages_build_output_dir = "dist"
+
+[[d1_databases]]
+binding = "DB"
+database_name = "recipe_db"
+database_id = "1d949be9-ff76-4522-b54f-dedd74116490"
