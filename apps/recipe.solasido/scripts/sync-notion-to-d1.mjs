@@ -4,25 +4,12 @@ import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
 import { execSync } from 'node:child_process';
-
-const NOTION_API_VERSION = '2025-09-03';
-const DEFAULT_DATA_SOURCE_ID = '30216edf-fb5d-80bb-b198-000b5df3bb24';
+import { randomBytes } from 'node:crypto';
 
 function getArg(name) {
   const prefix = `--${name}=`;
   const hit = process.argv.find((a) => a.startsWith(prefix));
   return hit ? hit.slice(prefix.length) : undefined;
-}
-
-function readNotionKey() {
-  const fromEnv = process.env.NOTION_API_KEY?.trim();
-  if (fromEnv) return fromEnv;
-
-  const keyPath = path.join(os.homedir(), '.config', 'notion', 'api_key');
-  if (!fs.existsSync(keyPath)) {
-    throw new Error(`Notion API key not found: ${keyPath}`);
-  }
-  return fs.readFileSync(keyPath, 'utf8').trim();
 }
 
 function runD1Sql(sql, { local = false } = {}) {
@@ -38,162 +25,121 @@ function sqlQuote(v) {
   return `'${String(v).replaceAll("'", "''")}'`;
 }
 
-function normalizeId(notionPageId) {
-  return String(notionPageId || '').replaceAll('-', '');
+function normalizeId(v) {
+  return String(v || '').replaceAll('-', '').trim();
 }
 
-function extractTextProperty(prop, fallback = '') {
-  if (!prop) return fallback;
-  const rich = prop.rich_text || [];
-  if (rich[0]?.plain_text) return rich[0].plain_text;
-  return fallback;
+function generateUuidV7() {
+  const ts = BigInt(Date.now());
+  const rand = randomBytes(10); // 80 bits
+
+  const bytes = new Uint8Array(16);
+
+  // 48-bit unix timestamp (ms)
+  bytes[0] = Number((ts >> 40n) & 0xffn);
+  bytes[1] = Number((ts >> 32n) & 0xffn);
+  bytes[2] = Number((ts >> 24n) & 0xffn);
+  bytes[3] = Number((ts >> 16n) & 0xffn);
+  bytes[4] = Number((ts >> 8n) & 0xffn);
+  bytes[5] = Number(ts & 0xffn);
+
+  // version 7 (high 4 bits) + 12 bits random
+  bytes[6] = 0x70 | (rand[0] & 0x0f);
+  bytes[7] = rand[1];
+
+  // variant 10xx + 62 bits random
+  bytes[8] = 0x80 | (rand[2] & 0x3f);
+  bytes[9] = rand[3];
+  bytes[10] = rand[4];
+  bytes[11] = rand[5];
+  bytes[12] = rand[6];
+  bytes[13] = rand[7];
+  bytes[14] = rand[8];
+  bytes[15] = rand[9];
+
+  const hex = Array.from(bytes, (b) => b.toString(16).padStart(2, '0')).join('');
+  return `${hex.slice(0, 8)}-${hex.slice(8, 12)}-${hex.slice(12, 16)}-${hex.slice(16, 20)}-${hex.slice(20)}`;
 }
 
-function extractTitleProperty(prop, fallback = '') {
-  if (!prop) return fallback;
-  const title = prop.title || [];
-  if (title[0]?.plain_text) return title[0].plain_text;
-  return fallback;
+function extFromContentType(contentType = '') {
+  if (contentType.includes('png')) return 'png';
+  if (contentType.includes('webp')) return 'webp';
+  if (contentType.includes('gif')) return 'gif';
+  if (contentType.includes('svg')) return 'svg';
+  return 'jpg';
 }
 
-function extractThumbnailUrl(prop) {
-  const files = prop?.files || [];
-  if (!files.length) return '';
-  const f = files[0];
-  if (f.file?.url) return f.file.url;
-  if (f.external?.url) return f.external.url;
-  return '';
-}
+function parseRowsInput() {
+  const rowJson = getArg('row-json');
+  const rowsJson = getArg('rows-json');
+  const inputFile = getArg('input-file');
 
-function toRecipeRow(notionResult) {
-  const p = notionResult.properties || {};
-  const ingredients = (p['재료 목록']?.multi_select || []).map((x) => x.name).filter(Boolean);
-
-  return {
-    id: normalizeId(notionResult.id),
-    name: extractTitleProperty(p['이름'], '제목 없음'),
-    ingredients: JSON.stringify(ingredients),
-    cook_time: extractTextProperty(p['조리 시간'], ''),
-    recipe_text: extractTextProperty(p['레시피'], ''),
-    thumbnail_url: extractThumbnailUrl(p['썸네일']),
-  };
-}
-
-function sanitizeFilePart(input) {
-  return String(input || '')
-    .normalize('NFC')
-    .replace(/[\\/:*?"<>|]/g, '')
-    .replace(/\s+/g, '_')
-    .trim();
-}
-
-function getCloudflareImagesConfig() {
-  const accountId =
-    process.env.CF_ACCOUNT_ID ||
-    process.env.CLOUDFLARE_ACCOUNT_ID ||
-    process.env.CF_IMAGES_ACCOUNT_ID;
-
-  const apiToken =
-    process.env.CF_IMAGES_API_TOKEN ||
-    process.env.CLOUDFLARE_API_TOKEN ||
-    process.env.CF_API_TOKEN;
-
-  if (!accountId || !apiToken) {
-    throw new Error(
-      'Cloudflare Images config missing. Set CF_ACCOUNT_ID (or CLOUDFLARE_ACCOUNT_ID) and CF_IMAGES_API_TOKEN (or CLOUDFLARE_API_TOKEN).',
-    );
+  if (rowJson) {
+    return [JSON.parse(rowJson)];
+  }
+  if (rowsJson) {
+    const arr = JSON.parse(rowsJson);
+    if (!Array.isArray(arr)) throw new Error('--rows-json must be a JSON array');
+    return arr;
+  }
+  if (inputFile) {
+    const raw = fs.readFileSync(path.resolve(inputFile), 'utf8');
+    const parsed = JSON.parse(raw);
+    return Array.isArray(parsed) ? parsed : [parsed];
   }
 
-  return { accountId, apiToken };
-}
-
-async function uploadThumbnailToCloudflareImages(row) {
-  const src = row.thumbnail_url;
-  if (!src || !/^https?:\/\//i.test(src)) return row;
-
-  const { accountId, apiToken } = getCloudflareImagesConfig();
-
-  const imageRes = await fetch(src);
-  if (!imageRes.ok) {
-    throw new Error(`Thumbnail download failed (${imageRes.status}) for recipe id=${row.id}`);
+  const stdin = fs.readFileSync(0, 'utf8').trim();
+  if (stdin) {
+    const parsed = JSON.parse(stdin);
+    return Array.isArray(parsed) ? parsed : [parsed];
   }
 
-  const imageBuffer = Buffer.from(await imageRes.arrayBuffer());
-  const contentType = imageRes.headers.get('content-type') || 'image/jpeg';
-  const fileName = `${sanitizeFilePart(row.name) || 'untitled_recipe'}_${row.id.slice(0, 8)}`;
-
-  const form = new FormData();
-  form.append('file', new Blob([imageBuffer], { type: contentType }), fileName);
-  form.append('id', row.id);
-  form.append('metadata', JSON.stringify({ recipeId: row.id, recipeName: row.name }));
-
-  const uploadRes = await fetch(
-    `https://api.cloudflare.com/client/v4/accounts/${accountId}/images/v1`,
-    {
-      method: 'POST',
-      headers: {
-        Authorization: `Bearer ${apiToken}`,
-      },
-      body: form,
-    },
+  throw new Error(
+    'No input rows. Provide one of: --row-json=..., --rows-json=..., --input-file=... or JSON via stdin.',
   );
+}
 
-  const payload = await uploadRes.json();
-  if (!uploadRes.ok || !payload?.success) {
-    throw new Error(
-      `Cloudflare Images upload failed for recipe id=${row.id}: ${JSON.stringify(payload?.errors || payload)}`,
-    );
-  }
+function normalizeInputRow(raw) {
+  const id = normalizeId(raw.id ?? raw.notionPageId ?? raw.notion_page_id);
 
-  const variantUrl = payload?.result?.variants?.[0] || '';
-  if (!variantUrl) {
-    throw new Error(`Cloudflare Images upload succeeded but variant URL missing for recipe id=${row.id}`);
-  }
+  const name = String(raw.name ?? raw.title ?? raw['이름'] ?? '').trim();
+
+  const ingredientsRaw = raw.ingredients ?? raw['재료 목록'] ?? [];
+  const ingredients = Array.isArray(ingredientsRaw)
+    ? ingredientsRaw.map((x) => String(x).trim()).filter(Boolean)
+    : String(ingredientsRaw)
+        .split(',')
+        .map((x) => x.trim())
+        .filter(Boolean);
+
+  const cookTime = String(raw.cookTime ?? raw.cook_time ?? raw['조리 시간'] ?? '').trim();
+  const recipeText = String(raw.recipeText ?? raw.recipe_text ?? raw['레시피'] ?? '').trim();
+  const thumbnailSource = String(
+    raw.thumbnailUrl ?? raw.thumbnail_url ?? raw.thumbnail ?? raw['썸네일'] ?? '',
+  ).trim();
 
   return {
-    ...row,
-    thumbnail_url: variantUrl,
+    id,
+    name,
+    ingredients: JSON.stringify(ingredients),
+    cook_time: cookTime,
+    recipe_text: recipeText,
+    thumbnail_source: thumbnailSource,
   };
 }
 
-async function fetchNotionPage(key, dataSourceId, startCursor) {
-  const body = startCursor ? { start_cursor: startCursor } : {};
-  const res = await fetch(`https://api.notion.com/v1/data_sources/${dataSourceId}/query`, {
-    method: 'POST',
-    headers: {
-      Authorization: `Bearer ${key}`,
-      'Notion-Version': NOTION_API_VERSION,
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify(body),
-  });
+function validateNormalizedRow(row) {
+  if (!row.id) return { ok: false, reason: 'missing id' };
+  if (!row.name) return { ok: false, reason: 'missing name' };
 
-  if (!res.ok) {
-    const text = await res.text();
-    throw new Error(`Notion API error ${res.status}: ${text}`);
+  try {
+    const parsed = JSON.parse(row.ingredients);
+    if (!Array.isArray(parsed)) return { ok: false, reason: 'ingredients is not an array' };
+  } catch {
+    return { ok: false, reason: 'ingredients json parse failed' };
   }
 
-  return res.json();
-}
-
-async function fetchAllNotionRecipes(key, dataSourceId) {
-  const rows = [];
-  let cursor = undefined;
-
-  while (true) {
-    const page = await fetchNotionPage(key, dataSourceId, cursor);
-    rows.push(...(page.results || []).map(toRecipeRow));
-    if (!page.has_more) break;
-    cursor = page.next_cursor;
-  }
-
-  return rows;
-}
-
-function getRemoteIds({ local = false } = {}) {
-  const rs = runD1Sql('SELECT id FROM recipes;', { local });
-  const rows = rs?.[0]?.results || [];
-  return new Set(rows.map((r) => String(r.id)));
+  return { ok: true };
 }
 
 function assertSchema({ local = false } = {}) {
@@ -203,6 +149,72 @@ function assertSchema({ local = false } = {}) {
   const missing = required.filter((c) => !cols.has(c));
   if (missing.length) {
     throw new Error(`recipes table schema mismatch. Missing columns: ${missing.join(', ')}`);
+  }
+}
+
+function recipeExists(id, { local = false } = {}) {
+  const rs = runD1Sql(
+    `SELECT 1 as ok FROM recipes WHERE id = ${sqlQuote(id)} LIMIT 1;`,
+    { local },
+  );
+  const rows = rs?.[0]?.results || [];
+  return rows.length > 0;
+}
+
+function uploadImageViaR2Script(tempFilePath) {
+  const cmd = `node ./scripts/upload-images-to-r2.mjs "${tempFilePath}" --json`;
+  const out = execSync(cmd, { encoding: 'utf8' });
+  const parsed = JSON.parse(out);
+  const first = parsed?.results?.[0];
+  if (!first?.ok || !first.publicUrl) {
+    throw new Error(`r2:upload failed: ${JSON.stringify(first || parsed)}`);
+  }
+  return first.publicUrl;
+}
+
+async function uploadImageViaR2WithRetry(tempFilePath, retries = 2) {
+  let lastError;
+  for (let attempt = 0; attempt <= retries; attempt += 1) {
+    try {
+      return uploadImageViaR2Script(tempFilePath);
+    } catch (e) {
+      lastError = e;
+      if (attempt < retries) {
+        const backoffMs = 500 * (attempt + 1);
+        await new Promise((resolve) => setTimeout(resolve, backoffMs));
+      }
+    }
+  }
+  throw lastError;
+}
+
+async function resolveThumbnailUrl(row) {
+  const src = row.thumbnail_source;
+  if (!src || !/^https?:\/\//i.test(src)) return '';
+
+  const res = await fetch(src);
+  if (!res.ok) {
+    throw new Error(`Thumbnail download failed (${res.status}) for recipe id=${row.id}`);
+  }
+
+  const buf = Buffer.from(await res.arrayBuffer());
+  const ext = extFromContentType(res.headers.get('content-type') || '');
+  const uuidv7 = generateUuidV7();
+  const fileName = `${uuidv7}.${ext}`;
+
+  const tmpDir = fs.mkdtempSync(path.join(os.tmpdir(), 'recipe-r2-'));
+  const tmpFile = path.join(tmpDir, fileName);
+  fs.writeFileSync(tmpFile, buf);
+
+  try {
+    return await uploadImageViaR2WithRetry(tmpFile, 2);
+  } finally {
+    try {
+      fs.unlinkSync(tmpFile);
+      fs.rmdirSync(tmpDir);
+    } catch {
+      // ignore cleanup errors
+    }
   }
 }
 
@@ -223,35 +235,45 @@ VALUES (
 
 async function main() {
   const local = process.argv.includes('--local');
-  const dataSourceId =
-    getArg('data-source-id') || process.env.NOTION_DATA_SOURCE_ID || DEFAULT_DATA_SOURCE_ID;
+  const normalizedRows = parseRowsInput().map(normalizeInputRow);
 
   console.log(`Mode: ${local ? 'local' : 'remote'}`);
-  console.log(`Notion data_source_id: ${dataSourceId}`);
-
-  const notionKey = readNotionKey();
+  console.log(`Input rows: ${normalizedRows.length}`);
 
   assertSchema({ local });
-  const existingIds = getRemoteIds({ local });
-  console.log(`Remote recipes in DB: ${existingIds.size}`);
 
-  const notionRows = await fetchAllNotionRecipes(notionKey, dataSourceId);
-  console.log(`Recipes fetched from Notion: ${notionRows.length}`);
-
-  const missing = notionRows.filter((r) => !existingIds.has(r.id));
-  console.log(`Missing recipes to insert: ${missing.length}`);
-
+  let invalidSkipped = 0;
+  let existsSkipped = 0;
   let inserted = 0;
-  for (const row of missing) {
-    const rowWithCloudflareImage = await uploadThumbnailToCloudflareImages(row);
-    insertRecipe(rowWithCloudflareImage, { local });
-    inserted += 1;
-    console.log(
-      `Inserted: ${rowWithCloudflareImage.name} (${rowWithCloudflareImage.id}) thumb=${rowWithCloudflareImage.thumbnail_url || '-'}`,
+
+  for (const row of normalizedRows) {
+    const v = validateNormalizedRow(row);
+    if (!v.ok) {
+      invalidSkipped += 1;
+      console.log(`Skipped invalid row: id=${row.id || '-'} reason=${v.reason}`);
+      continue;
+    }
+
+    if (recipeExists(row.id, { local })) {
+      existsSkipped += 1;
+      continue;
+    }
+
+    const thumbnailUrl = await resolveThumbnailUrl(row);
+    insertRecipe(
+      {
+        ...row,
+        thumbnail_url: thumbnailUrl,
+      },
+      { local },
     );
+    inserted += 1;
+    console.log(`Inserted: ${row.name} (${row.id}) thumb=${thumbnailUrl || '-'}`);
   }
 
-  console.log(`\nDone. inserted=${inserted}, skipped=${notionRows.length - inserted}`);
+  console.log(
+    `\nDone. inserted=${inserted}, skipped_existing=${existsSkipped}, skipped_invalid=${invalidSkipped}`,
+  );
 }
 
 main().catch((err) => {
