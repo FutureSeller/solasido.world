@@ -14,6 +14,7 @@
     "db:create": "wrangler d1 create recipe_db",
     "db:delete:local": "rm -rf .wrangler/state",
     "db:migrate:local": "wrangler d1 migrations apply recipe_db --local",
+    "db:delete": "wrangler d1 delete recipe_db",
     "db:migrate": "wrangler d1 migrations apply recipe_db --remote"
   },
   "dependencies": {
