@@ -6,3 +6,7 @@ pages_build_output_dir = "dist"
 binding = "DB"
 database_name = "recipe_db"
 database_id = "9fcfed36-33af-46f8-899f-d0277441acc0"
+
+[[r2_buckets]]
+binding = "IMAGES"
+bucket_name = "solasido-static-assets"
