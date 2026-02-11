@@ -4,8 +4,7 @@ export interface Recipe {
   ingredients: string[];
   cookTime: string;
   recipeText: string;
-  localThumb: string;
-  thumb: string;
+  thumbnailUrl: string;
 }
 
 export interface PaginationInfo {

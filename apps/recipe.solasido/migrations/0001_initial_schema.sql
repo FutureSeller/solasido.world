@@ -1,13 +1,11 @@
 -- Create recipes table
 CREATE TABLE recipes (
   id TEXT PRIMARY KEY,
-  notion_page_id TEXT,
   name TEXT NOT NULL,
   ingredients TEXT NOT NULL, -- JSON array stored as string
   cook_time TEXT,
   recipe_text TEXT,
   thumbnail_url TEXT,
-  thumbnail_local TEXT,
   created_at INTEGER DEFAULT (unixepoch()),
   updated_at INTEGER DEFAULT (unixepoch())
 );
