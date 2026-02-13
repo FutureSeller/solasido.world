@@ -48,6 +48,27 @@ pnpm build
 pnpm start
 ```
 
+### Cloudflare 배포 (OpenNext)
+
+```bash
+# Worker 산출물 빌드
+pnpm build:worker
+
+# 로컬 Worker 프리뷰
+pnpm preview
+
+# Cloudflare 배포
+pnpm deploy
+```
+
+> 참고
+>
+> - `@cloudflare/next-on-pages`는 deprecated 상태이며, 이 프로젝트는 `@opennextjs/cloudflare`를 사용합니다.
+> - `open-next.config.ts`가 없으면 `pnpm build:worker`가 중단됩니다.
+> - OpenNext 산출물 경로:
+>   - Worker: `.open-next/worker.js`
+>   - Assets: `.open-next/assets`
+
 ### Linting & Formatting
 
 ```bash

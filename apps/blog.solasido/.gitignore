@@ -51,6 +51,7 @@ sync-data-compressed.sql
 
 # wrangler local dev
 .wrangler/
+.open-next/
 
 # old content (migrated to D1)
 content/

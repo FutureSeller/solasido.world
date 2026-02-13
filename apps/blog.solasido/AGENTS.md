@@ -11,12 +11,22 @@
 ## Build, Test, and Development Commands
 - `pnpm dev`: Start local Next.js dev server.
 - `pnpm build`: Build production assets.
-- `pnpm start`: Serve the built static output (`out/`).
+- `pnpm start`: Serve the built static output (`out/`) for static checks.
+- `pnpm build:worker`: Build Cloudflare Worker output via OpenNext (`.open-next/`).
+- `pnpm preview`: Build OpenNext output and run local Wrangler preview.
+- `pnpm deploy`: Build OpenNext output and deploy with Wrangler.
 - `pnpm lint`: Run Biome checks across the repo.
 - `pnpm lint:fix`: Apply safe lint fixes.
 - `pnpm format`: Format code with Biome.
 - `pnpm tsx scripts/test-d1-read.ts`: Validate local D1 read + gzip decode path.
 - `pnpm wrangler d1 execute blog-db --local --file=schema.sql`: Apply DB schema locally.
+
+## Cloudflare Deployment Notes
+- Do not use `@cloudflare/next-on-pages` (deprecated). Use `@opennextjs/cloudflare`.
+- Keep `open-next.config.ts` in repo root; missing file causes interactive build prompt/failure.
+- Keep `wrangler.toml` aligned with OpenNext output:
+  - `main = ".open-next/worker.js"`
+  - `[assets].directory = ".open-next/assets"`
 
 ## Coding Style & Naming Conventions
 - Language: TypeScript (React 19 + Next 16).

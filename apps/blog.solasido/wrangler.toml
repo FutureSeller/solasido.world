@@ -1,5 +1,15 @@
 name = "blog-solasido"
-compatibility_date = "2024-01-01"
+main = ".open-next/worker.js"
+compatibility_date = "2025-02-13"
+compatibility_flags = ["nodejs_compat", "global_fetch_strictly_public"]
+
+[assets]
+binding = "ASSETS"
+directory = ".open-next/assets"
+
+[[services]]
+binding = "WORKER_SELF_REFERENCE"
+service = "blog-solasido"
 
 [[d1_databases]]
 binding = "DB"
