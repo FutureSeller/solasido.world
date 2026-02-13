@@ -9,6 +9,7 @@
     "build:worker": "opennextjs-cloudflare build",
     "preview": "opennextjs-cloudflare build && wrangler dev",
     "deploy": "opennextjs-cloudflare build && wrangler deploy",
+    "db:sync-notion": "pnpm tsx scripts/sync-to-d1-safe.ts",
     "start": "serve out",
     "lint": "biome check .",
     "lint:fix": "biome check --write .",

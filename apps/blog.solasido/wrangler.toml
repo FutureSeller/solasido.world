@@ -15,3 +15,7 @@ service = "blog-solasido"
 binding = "DB"
 database_name = "blog-db"
 database_id = "36360ddd-8cef-4953-b208-6b352935f7e2"
+
+[[r2_buckets]]
+binding = "IMAGES"
+bucket_name = "solasido-static-assets"

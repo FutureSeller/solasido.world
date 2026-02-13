@@ -15,6 +15,7 @@
 - `pnpm build:worker`: Build Cloudflare Worker output via OpenNext (`.open-next/`).
 - `pnpm preview`: Build OpenNext output and run local Wrangler preview.
 - `pnpm deploy`: Build OpenNext output and deploy with Wrangler.
+- `pnpm db:sync-notion`: Fetch Notion pages and sync to D1 with R2 image upload + URL replacement.
 - `pnpm lint`: Run Biome checks across the repo.
 - `pnpm lint:fix`: Apply safe lint fixes.
 - `pnpm format`: Format code with Biome.
@@ -27,6 +28,7 @@
 - Keep `wrangler.toml` aligned with OpenNext output:
   - `main = ".open-next/worker.js"`
   - `[assets].directory = ".open-next/assets"`
+- For expiring Notion image URLs, set `R2_BUCKET_NAME` and `R2_PUBLIC_BASE_URL` in `.env.local` and use `pnpm db:sync-notion`.
 
 ## Coding Style & Naming Conventions
 - Language: TypeScript (React 19 + Next 16).

@@ -69,6 +69,28 @@ pnpm deploy
 >   - Worker: `.open-next/worker.js`
 >   - Assets: `.open-next/assets`
 
+### Notion 이미지 만료 대응 (R2)
+
+Notion 파일 URL(S3 presigned)은 만료되므로, 동기화 시 이미지를 Cloudflare R2로 업로드해 영구 URL로 치환합니다.
+
+`.env.local`에 아래 값을 설정하세요.
+
+```bash
+R2_BUCKET_NAME=solasido-static-assets
+R2_PUBLIC_BASE_URL=https://static-images.solasido.world
+```
+
+실행:
+
+```bash
+pnpm db:sync-notion
+```
+
+동작:
+- 본문 이미지/커버 이미지를 다운로드 후 R2 업로드
+- 키 규칙: `blog/<sha256-prefix>/<sha256>.<ext>` (콘텐츠 해시 기반, 중복/충돌 방지)
+- SQL 생성 시 URL을 R2 공개 URL로 치환
+
 ### Linting & Formatting
 
 ```bash
