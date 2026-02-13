@@ -1,11 +1,12 @@
+import { toCloudflareImageUrl } from "@/lib/cloudflare-image";
+import { getAllPostsFromD1, getPostBySlugFromD1 } from "@/lib/db";
 import type { Metadata } from "next";
-import { notFound } from "next/navigation";
 import Image from "next/image";
 import Link from "next/link";
+import { notFound } from "next/navigation";
 import ReactMarkdown from "react-markdown";
-import type { Components } from "react-markdown";
-import { getAllPostsFromD1, getPostBySlugFromD1 } from "@/lib/db";
-import styles from "./loading.module.css";
+import rehypeRaw from "rehype-raw";
+import { markdownComponents, stripLeadingMetaCodeBlock } from "./markdown";
 
 interface PageProps {
   params: Promise<{
@@ -39,35 +40,6 @@ export async function generateMetadata({
   };
 }
 
-// Custom components for ReactMarkdown
-const markdownComponents: Components = {
-  img: ({ src, alt }) => {
-    if (!src) return null;
-
-    return (
-      <span className="block relative w-full my-8">
-        <span
-          className={`block relative w-full h-96 rounded-lg overflow-hidden ${styles.imageLoader}`}
-        >
-          <Image
-            src={src}
-            alt={alt || ""}
-            fill
-            className="object-contain"
-            loading="lazy"
-            sizes="(max-width: 768px) 100vw, (max-width: 1200px) 80vw, 1200px"
-          />
-        </span>
-        {alt && (
-          <span className="block text-center text-sm text-gray-500 mt-2">
-            {alt}
-          </span>
-        )}
-      </span>
-    );
-  },
-};
-
 export default async function PostPage({ params }: PageProps) {
   const { slug } = await params;
   const post = await getPostBySlugFromD1(slug);
@@ -75,6 +47,8 @@ export default async function PostPage({ params }: PageProps) {
   if (!post) {
     notFound();
   }
+
+  const content = stripLeadingMetaCodeBlock(post.content);
 
   return (
     <div className="min-h-screen">
@@ -90,34 +64,36 @@ export default async function PostPage({ params }: PageProps) {
       <main className="max-w-4xl mx-auto px-6 py-12">
         <article>
           {/* Header */}
-          <header className="mb-12">
+          <header className="mb-8">
             {post.thumbnail && (
-              <div
-                className={`relative w-full h-80 mb-8 rounded-lg overflow-hidden ${styles.imageLoader}`}
-              >
+              <div className="relative w-full aspect-[16/9] mb-8 rounded-lg overflow-hidden bg-gray-100">
                 <Image
-                  src={post.thumbnail}
+                  src={toCloudflareImageUrl(post.thumbnail, {
+                    quality: 75,
+                    width: 1280,
+                  })}
                   alt={post.title}
                   fill
                   className="object-cover"
                   priority
-                  sizes="(max-width: 768px) 100vw, (max-width: 1200px) 80vw, 1200px"
+                  sizes="(max-width: 768px) 100vw, 896px"
                 />
               </div>
             )}
-            <h1 className="text-5xl font-bold mb-4">{post.title}</h1>
+            <h1 className="text-3xl md:text-5xl font-bold mb-4">
+              {post.title}
+            </h1>
             {post.description && (
-              <p className="text-xl text-gray-600 mb-4">{post.description}</p>
+              <p className="text-base md:text-xl text-gray-600 mb-4">
+                {post.description}
+              </p>
             )}
-            <div className="flex items-center gap-4 text-sm text-gray-500 border-b pb-4">
+            <div className="flex flex-wrap items-center gap-4 text-sm text-gray-500 border-b pb-4">
               <time>{post.date}</time>
               {post.tags && post.tags.length > 0 && (
-                <div className="flex gap-2">
+                <div className="flex flex-wrap gap-2">
                   {post.tags.map((tag) => (
-                    <span
-                      key={tag}
-                      className="bg-gray-100 px-2 py-1 rounded"
-                    >
+                    <span key={tag} className="bg-gray-100 px-2 py-1 rounded">
                       {tag}
                     </span>
                   ))}
@@ -127,9 +103,12 @@ export default async function PostPage({ params }: PageProps) {
           </header>
 
           {/* Content */}
-          <div className="prose prose-lg max-w-none">
-            <ReactMarkdown components={markdownComponents}>
-              {post.content}
+          <div className="prose prose-lg max-w-none prose-headings:break-keep prose-p:leading-7 prose-pre:whitespace-pre-wrap prose-pre:break-words">
+            <ReactMarkdown
+              components={markdownComponents}
+              rehypePlugins={[rehypeRaw]}
+            >
+              {content}
             </ReactMarkdown>
           </div>
         </article>

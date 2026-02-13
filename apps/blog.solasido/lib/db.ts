@@ -1,4 +1,5 @@
 import { gunzipSync } from "node:zlib";
+import { executeD1Query } from "./d1-client";
 
 export interface Post {
   id: string;
@@ -25,6 +26,70 @@ interface PostRow {
   cover_url: string | null;
 }
 
+const CATEGORY_MAP: Record<string, string> = {
+  lifelog: "lifelog",
+  spendinglog: "spendinglog",
+  spot: "spot",
+  게임: "gamelog",
+};
+
+const TRAVEL_KEYWORDS = [
+  // Asia
+  "일본",
+  "도쿄",
+  "오사카",
+  "후쿠오카",
+  "홋카이도",
+  "교토",
+  "삿포로",
+  "쿠마모토",
+  "태국",
+  "방콕",
+  "싱가포르",
+  "싱가폴",
+  "필리핀",
+  "세부",
+  // Europe
+  "유럽",
+  "그리스",
+  "스페인",
+  "영국",
+  "프랑스",
+  "이탈리아",
+  "아테네",
+  "테살로니키",
+  "산토리니",
+  "메테오라",
+  "바르셀로나",
+  "마드리드",
+  "톨레도",
+  "몬세라트",
+  "런던",
+  "파리",
+  "리옹",
+  "로마",
+  "바티칸",
+  "피렌체",
+  "포지타노",
+  // Americas
+  "미국",
+  "괌",
+  "시애틀",
+  "벨뷰",
+  "밴쿠버",
+  // Korea
+  "제주",
+  "속초",
+  "경주",
+  "강릉",
+  // Generic travel keywords
+  "여행",
+  "신혼여행",
+];
+
+const POST_SELECT_COLUMNS =
+  "id, slug, title, content_base64, created_at, tags, cover_url";
+
 /**
  * Decompress and decode content from D1
  */
@@ -39,7 +104,10 @@ function decodeContent(content_base64: string): string {
  */
 function parseTags(tagsJson: string): string[] {
   try {
-    return JSON.parse(tagsJson);
+    const parsed = JSON.parse(tagsJson);
+    return Array.isArray(parsed)
+      ? parsed.filter((tag): tag is string => typeof tag === "string")
+      : [];
   } catch {
     return [];
   }
@@ -78,39 +146,13 @@ function extractDescription(content: string): string {
  * Map tag to category
  */
 function getCategoryFromTags(tags: string[]): string {
-  // Direct category mapping
-  const categoryMap: Record<string, string> = {
-    "lifelog": "lifelog",
-    "spendinglog": "spendinglog",
-    "spot": "spot",
-    "게임": "gamelog",
-  };
-
   for (const tag of tags) {
-    const category = categoryMap[tag.toLowerCase()];
+    const category = CATEGORY_MAP[tag.toLowerCase()];
     if (category) return category;
   }
 
-  // Travel-related keywords (countries, regions, cities)
-  const travelKeywords = [
-    // 아시아
-    "일본", "도쿄", "오사카", "후쿠오카", "홋카이도", "교토", "삿포로", "쿠마모토",
-    "태국", "방콕", "싱가포르", "싱가폴", "필리핀", "세부",
-    // 유럽
-    "유럽", "그리스", "스페인", "영국", "프랑스", "이탈리아",
-    "아테네", "테살로니키", "산토리니", "메테오라",
-    "바르셀로나", "마드리드", "톨레도", "몬세라트",
-    "런던", "파리", "리옹", "로마", "바티칸", "피렌체", "포지타노",
-    // 미주
-    "미국", "괌", "시애틀", "벨뷰", "밴쿠버",
-    // 한국
-    "제주", "속초", "경주", "강릉",
-    // 일반 여행 키워드
-    "여행", "신혼여행",
-  ];
-
   for (const tag of tags) {
-    if (travelKeywords.some(keyword => tag.includes(keyword))) {
+    if (TRAVEL_KEYWORDS.some((keyword) => tag.includes(keyword))) {
       return "travel";
     }
   }
@@ -136,6 +178,7 @@ function formatDate(isoDate: string): string {
 function transformPost(row: PostRow): Post {
   const tags = parseTags(row.tags);
   const content = decodeContent(row.content_base64);
+  const coverUrl = normalizeCoverUrl(row.cover_url);
 
   return {
     id: row.id,
@@ -144,13 +187,22 @@ function transformPost(row: PostRow): Post {
     content,
     created_at: row.created_at,
     tags,
-    cover_url: row.cover_url === "null" ? null : row.cover_url,
+    cover_url: coverUrl,
     // Computed fields
     date: formatDate(row.created_at),
     category: getCategoryFromTags(tags),
-    thumbnail: row.cover_url === "null" ? null : row.cover_url,
+    thumbnail: coverUrl,
     description: extractDescription(content),
   };
+}
+
+function normalizeCoverUrl(coverUrl: string | null): string | null {
+  if (!coverUrl || coverUrl === "null") return null;
+  return coverUrl;
+}
+
+function escapeSqlLiteral(value: string): string {
+  return value.replace(/'/g, "''");
 }
 
 /**
@@ -169,7 +221,9 @@ export async function getAllPosts(): Promise<Post[]> {
  * Get posts by category/tag
  */
 export async function getPostsByCategory(category: string): Promise<Post[]> {
-  const response = await fetch(`/api/posts?category=${encodeURIComponent(category)}`);
+  const response = await fetch(
+    `/api/posts?category=${encodeURIComponent(category)}`,
+  );
   if (!response.ok) {
     throw new Error("Failed to fetch posts");
   }
@@ -193,10 +247,9 @@ export async function getPostBySlug(slug: string): Promise<Post | null> {
 /**
  * Server-side data fetching (for use in Server Components and API routes)
  */
-import { executeD1Query } from "./d1-client";
 
 export async function getAllPostsFromD1(): Promise<Post[]> {
-  const query = `SELECT id, slug, title, content_base64, created_at, tags, cover_url
+  const query = `SELECT ${POST_SELECT_COLUMNS}
                  FROM posts
                  ORDER BY created_at DESC`;
 
@@ -204,10 +257,13 @@ export async function getAllPostsFromD1(): Promise<Post[]> {
   return rows.map(transformPost);
 }
 
-export async function getPostsByCategoryFromD1(category: string): Promise<Post[]> {
-  const query = `SELECT id, slug, title, content_base64, created_at, tags, cover_url
+export async function getPostsByCategoryFromD1(
+  category: string,
+): Promise<Post[]> {
+  const escapedCategory = escapeSqlLiteral(category);
+  const query = `SELECT ${POST_SELECT_COLUMNS}
                  FROM posts
-                 WHERE tags LIKE '%"${category}"%'
+                 WHERE tags LIKE '%"${escapedCategory}"%'
                  ORDER BY created_at DESC`;
 
   const rows = await executeD1Query<PostRow>(query);
@@ -215,9 +271,10 @@ export async function getPostsByCategoryFromD1(category: string): Promise<Post[]
 }
 
 export async function getPostBySlugFromD1(slug: string): Promise<Post | null> {
-  const query = `SELECT id, slug, title, content_base64, created_at, tags, cover_url
+  const escapedSlug = escapeSqlLiteral(slug);
+  const query = `SELECT ${POST_SELECT_COLUMNS}
                  FROM posts
-                 WHERE slug = '${slug.replace(/'/g, "''")}'
+                 WHERE slug = '${escapedSlug}'
                  LIMIT 1`;
 
   const rows = await executeD1Query<PostRow>(query);
