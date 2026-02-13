@@ -91,6 +91,24 @@ pnpm db:sync-notion
 - 키 규칙: `blog/<sha256-prefix>/<sha256>.<ext>` (콘텐츠 해시 기반, 중복/충돌 방지)
 - SQL 생성 시 URL을 R2 공개 URL로 치환
 
+### 로컬 DB 재적재 절차
+
+Notion 이미지 만료 URL을 R2 URL로 반영하려면, 로컬 D1 데이터를 다시 적재하세요.
+
+```bash
+# 1) Notion -> SQL 생성 (이미지/커버 URL을 R2로 치환)
+pnpm db:sync-notion
+
+# 2) 로컬 DB 스키마 적용
+pnpm wrangler d1 execute blog-db --local --file=schema.sql
+
+# 3) SQL 배치 파일 생성
+pnpm tsx scripts/split-sql.ts
+
+# 4) 로컬 DB에 배치 import
+bash scripts/import-batches.sh
+```
+
 ### Linting & Formatting
 
 ```bash
