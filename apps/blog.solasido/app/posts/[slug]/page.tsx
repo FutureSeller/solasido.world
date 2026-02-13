@@ -6,6 +6,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import ReactMarkdown from "react-markdown";
 import rehypeRaw from "rehype-raw";
+import ReadingProgress from "./ReadingProgress";
 import { markdownComponents, stripLeadingMetaCodeBlock } from "./markdown";
 
 interface PageProps {
@@ -52,6 +53,8 @@ export default async function PostPage({ params }: PageProps) {
 
   return (
     <div className="min-h-screen">
+      <ReadingProgress />
+
       {/* Header */}
       <header className="border-b sticky top-0 bg-white z-10">
         <div className="max-w-4xl mx-auto px-6 py-4">

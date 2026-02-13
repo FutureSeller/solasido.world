@@ -1,7 +1,7 @@
 "use client";
 
 import { toCloudflareImageUrl } from "@/lib/cloudflare-image";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 interface MarkdownImageProps {
   src: string;
@@ -16,7 +16,10 @@ export default function MarkdownImage({
   width,
   height,
 }: MarkdownImageProps) {
-  const [loaded, setLoaded] = useState(false);
+  const [status, setStatus] = useState<"loading" | "loaded" | "error">(
+    "loading",
+  );
+  const [isOpen, setIsOpen] = useState(false);
   const optimizedSrc = toCloudflareImageUrl(src, { quality: 75 });
 
   const parsedWidth =
@@ -31,22 +34,79 @@ export default function MarkdownImage({
   const aspectRatio = hasValidRatio
     ? `${parsedWidth} / ${parsedHeight}`
     : undefined;
+  const isLoading = status === "loading";
+  const isError = status === "error";
+
+  useEffect(() => {
+    if (!isOpen) return;
+
+    const originalOverflow = document.body.style.overflow;
+    const onKeyDown = (event: KeyboardEvent) => {
+      if (event.key === "Escape") {
+        setIsOpen(false);
+      }
+    };
+
+    document.body.style.overflow = "hidden";
+    window.addEventListener("keydown", onKeyDown);
+
+    return () => {
+      document.body.style.overflow = originalOverflow;
+      window.removeEventListener("keydown", onKeyDown);
+    };
+  }, [isOpen]);
 
   return (
-    <span
-      className={`block relative w-full my-8 rounded-lg overflow-hidden ${loaded ? "" : "bg-gray-100 min-h-40"}`}
-      style={!loaded && aspectRatio ? { aspectRatio } : undefined}
-    >
-      {!loaded && <span className="absolute inset-0 bg-gray-100" />}
-      <img
-        src={optimizedSrc}
-        alt={alt || ""}
-        loading="lazy"
-        decoding="async"
-        onLoad={() => setLoaded(true)}
-        onError={() => setLoaded(true)}
-        className={`block w-full h-auto ${loaded ? "opacity-100" : "opacity-0"}`}
-      />
-    </span>
+    <>
+      <span
+        className={`block relative w-full my-8 rounded-lg overflow-hidden ${
+          isLoading || isError ? "bg-gray-100 min-h-40" : ""
+        }`}
+        style={isLoading && aspectRatio ? { aspectRatio } : undefined}
+      >
+        {isLoading && <span className="absolute inset-0 bg-gray-100" />}
+        {isError && (
+          <span className="absolute inset-0 flex items-center justify-center text-sm text-gray-500">
+            Image unavailable
+          </span>
+        )}
+        <button
+          type="button"
+          aria-label="Open image preview"
+          onClick={() => {
+            if (status === "loaded") setIsOpen(true);
+          }}
+          disabled={status !== "loaded"}
+          className="block w-full text-left disabled:cursor-default"
+        >
+          <img
+            src={optimizedSrc}
+            alt={alt || ""}
+            loading="lazy"
+            decoding="async"
+            onLoad={() => setStatus("loaded")}
+            onError={() => setStatus("error")}
+            className={`block w-full h-auto ${
+              status === "loaded" ? "opacity-100 cursor-zoom-in" : "opacity-0"
+            }`}
+          />
+        </button>
+      </span>
+
+      {isOpen && (
+        <button
+          type="button"
+          aria-label="Close image preview"
+          onClick={() => setIsOpen(false)}
+          className="fixed inset-0 z-[60] flex items-center justify-center bg-black/80 p-4"
+        >
+          <img
+            src={optimizedSrc}
+            alt={alt || ""}
+            className="max-h-[92vh] w-auto max-w-full rounded-md"
+          />
+        </button>
+      )}
+    </>
   );
 }
