@@ -7,6 +7,7 @@ import { notFound } from "next/navigation";
 import ReactMarkdown from "react-markdown";
 import rehypeRaw from "rehype-raw";
 import ReadingProgress from "./ReadingProgress";
+import ScrollToTop from "./ScrollToTop";
 import { markdownComponents, stripLeadingMetaCodeBlock } from "./markdown";
 
 interface PageProps {
@@ -54,6 +55,7 @@ export default async function PostPage({ params }: PageProps) {
   return (
     <div className="min-h-screen">
       <ReadingProgress />
+      <ScrollToTop />
 
       {/* Header */}
       <header className="border-b sticky top-0 bg-white z-10">
