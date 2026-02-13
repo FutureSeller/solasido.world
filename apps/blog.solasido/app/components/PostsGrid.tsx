@@ -3,7 +3,7 @@
 import { useSearchParams, useRouter } from "next/navigation";
 import Link from "next/link";
 import Image from "next/image";
-import type { PostMetadata } from "@/lib/mdx";
+import type { Post } from "@/lib/db";
 
 const CATEGORY_CONFIG: Record<string, { emoji: string; label: string }> = {
   all: { emoji: "📚", label: "All" },
@@ -15,7 +15,7 @@ const CATEGORY_CONFIG: Record<string, { emoji: string; label: string }> = {
 };
 
 interface PostsGridProps {
-  posts: PostMetadata[];
+  posts: Post[];
 }
 
 export default function PostsGrid({ posts }: PostsGridProps) {

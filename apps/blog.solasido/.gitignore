@@ -39,3 +39,22 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# generated files
+notion-exports/
+sql-batches/
+sql-batches-safe/
+sql-batches-compressed/
+sync-data.sql
+sync-data-safe.sql
+sync-data-compressed.sql
+
+# wrangler local dev
+.wrangler/
+
+# old content (migrated to D1)
+content/
+
+# temp/log files
+*.log
+/tmp/

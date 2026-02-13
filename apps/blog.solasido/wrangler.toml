@@ -1,0 +1,7 @@
+name = "blog-solasido"
+compatibility_date = "2024-01-01"
+
+[[d1_databases]]
+binding = "DB"
+database_name = "blog-db"
+database_id = "36360ddd-8cef-4953-b208-6b352935f7e2"

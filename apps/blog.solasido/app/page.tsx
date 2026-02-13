@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { Suspense } from "react";
-import { getAllPosts } from "@/lib/mdx";
+import { getAllPostsFromD1 } from "@/lib/db";
 import PostsGrid from "./components/PostsGrid";
 
 export const metadata: Metadata = {
@@ -8,8 +8,8 @@ export const metadata: Metadata = {
   description: "일상, 소비, 여행, 게임 기록 블로그",
 };
 
-export default function Home() {
-  const posts = getAllPosts();
+export default async function Home() {
+  const posts = await getAllPostsFromD1();
 
   return (
     <main className="min-h-screen">

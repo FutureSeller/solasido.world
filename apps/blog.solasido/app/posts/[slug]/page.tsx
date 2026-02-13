@@ -3,7 +3,9 @@ import { notFound } from "next/navigation";
 import Image from "next/image";
 import Link from "next/link";
 import ReactMarkdown from "react-markdown";
-import { getAllPostSlugs, getPostBySlug } from "@/lib/mdx";
+import type { Components } from "react-markdown";
+import { getAllPostsFromD1, getPostBySlugFromD1 } from "@/lib/db";
+import styles from "./loading.module.css";
 
 interface PageProps {
   params: Promise<{
@@ -11,18 +13,11 @@ interface PageProps {
   }>;
 }
 
-export async function generateStaticParams() {
-  const slugs = getAllPostSlugs();
-  return slugs.map((slug) => ({
-    slug,
-  }));
-}
-
 export async function generateMetadata({
   params,
 }: PageProps): Promise<Metadata> {
   const { slug } = await params;
-  const post = getPostBySlug(slug);
+  const post = await getPostBySlugFromD1(slug);
 
   if (!post) {
     return {
@@ -37,16 +32,45 @@ export async function generateMetadata({
       title: post.title,
       description: post.description,
       type: "article",
-      publishedTime: post.date,
+      publishedTime: post.created_at,
       tags: post.tags,
       images: post.thumbnail ? [post.thumbnail] : [],
     },
   };
 }
 
+// Custom components for ReactMarkdown
+const markdownComponents: Components = {
+  img: ({ src, alt }) => {
+    if (!src) return null;
+
+    return (
+      <span className="block relative w-full my-8">
+        <span
+          className={`block relative w-full h-96 rounded-lg overflow-hidden ${styles.imageLoader}`}
+        >
+          <Image
+            src={src}
+            alt={alt || ""}
+            fill
+            className="object-contain"
+            loading="lazy"
+            sizes="(max-width: 768px) 100vw, (max-width: 1200px) 80vw, 1200px"
+          />
+        </span>
+        {alt && (
+          <span className="block text-center text-sm text-gray-500 mt-2">
+            {alt}
+          </span>
+        )}
+      </span>
+    );
+  },
+};
+
 export default async function PostPage({ params }: PageProps) {
   const { slug } = await params;
-  const post = getPostBySlug(slug);
+  const post = await getPostBySlugFromD1(slug);
 
   if (!post) {
     notFound();
@@ -68,12 +92,16 @@ export default async function PostPage({ params }: PageProps) {
           {/* Header */}
           <header className="mb-12">
             {post.thumbnail && (
-              <div className="relative w-full h-80 mb-8 rounded-lg overflow-hidden">
+              <div
+                className={`relative w-full h-80 mb-8 rounded-lg overflow-hidden ${styles.imageLoader}`}
+              >
                 <Image
                   src={post.thumbnail}
                   alt={post.title}
                   fill
                   className="object-cover"
+                  priority
+                  sizes="(max-width: 768px) 100vw, (max-width: 1200px) 80vw, 1200px"
                 />
               </div>
             )}
@@ -100,7 +128,9 @@ export default async function PostPage({ params }: PageProps) {
 
           {/* Content */}
           <div className="prose prose-lg max-w-none">
-            <ReactMarkdown>{post.content}</ReactMarkdown>
+            <ReactMarkdown components={markdownComponents}>
+              {post.content}
+            </ReactMarkdown>
           </div>
         </article>
       </main>

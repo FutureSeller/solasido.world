@@ -16,13 +16,16 @@
   "license": "ISC",
   "packageManager": "pnpm@10.28.0",
   "dependencies": {
+    "@notionhq/client": "^5.9.0",
     "next": "^16.1.6",
+    "notion-to-md": "^3.1.9",
     "react": "^19.2.4",
     "react-dom": "^19.2.4",
     "react-markdown": "^10.1.0"
   },
   "devDependencies": {
     "@biomejs/biome": "1.9.2",
+    "@cloudflare/next-on-pages": "^1.13.16",
     "@mdx-js/loader": "^3.1.1",
     "@mdx-js/react": "^3.1.1",
     "@next/mdx": "^16.1.6",
@@ -32,6 +35,7 @@
     "@types/react": "^19.2.14",
     "@types/react-dom": "^19.2.3",
     "autoprefixer": "^10.4.24",
+    "dotenv": "^17.3.1",
     "gray-matter": "^4.0.3",
     "postcss": "^8.5.6",
     "rehype-autolink-headings": "^7.1.0",
@@ -40,6 +44,7 @@
     "serve": "^14.2.5",
     "tailwindcss": "^4.1.18",
     "tsx": "^4.21.0",
-    "typescript": "^5.9.3"
+    "typescript": "^5.9.3",
+    "wrangler": "^4.64.0"
   }
 }
