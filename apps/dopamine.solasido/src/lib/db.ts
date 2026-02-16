@@ -1,5 +1,19 @@
 import type { Asset, BlogPost, RawData } from './types'
 
+type UpdatableBlogPostFields = Omit<BlogPost, 'id' | 'created_at'>
+const BLOG_POST_UPDATE_COLUMNS: Array<keyof UpdatableBlogPostFields> = [
+  'instagram_id',
+  'slug',
+  'title',
+  'meta_description',
+  'body',
+  'summary',
+  'status',
+  'published_at',
+  'canonical_url',
+  'og_image_url',
+]
+
 export class DatabaseClient {
   constructor(private db: D1Database) {}
 
@@ -12,7 +26,7 @@ export class DatabaseClient {
     return result
   }
 
-  async insertRawData(data: Omit<RawData, 'id'>): Promise<void> {
+  async insertRawData(data: RawData): Promise<void> {
     await this.db
       .prepare(
         `INSERT INTO rawdata (instagram_id, caption, permalink, timestamp, carousel_count)
@@ -159,13 +173,18 @@ export class DatabaseClient {
 
   async updateBlogPost(
     id: number,
-    updates: Partial<Omit<BlogPost, 'id' | 'created_at'>>
+    updates: Partial<UpdatableBlogPostFields>
   ): Promise<void> {
     const fields: string[] = []
-    const values: any[] = []
+    const values: unknown[] = []
 
-    for (const [key, value] of Object.entries(updates)) {
-      fields.push(`${key} = ?`)
+    for (const column of BLOG_POST_UPDATE_COLUMNS) {
+      const value = updates[column]
+      if (value === undefined) {
+        continue
+      }
+
+      fields.push(`${column} = ?`)
       values.push(value)
     }
 

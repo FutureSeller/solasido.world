@@ -1,43 +1,30 @@
-# Astro Starter Kit: Minimal
+# dopamine.solasido
 
-```sh
-pnpm create astro@latest -- --template minimal
-```
+Astro + Tailwind 기반의 정적 블로그 앱입니다.  
+현재는 목데이터(`src/data/mock-posts.ts`)를 기본 사용하고, 이후 D1 연동을 전제로 데이터 레이어가 분리되어 있습니다.
 
-> 🧑‍🚀 **Seasoned astronaut?** Delete this file. Have fun!
+## 개발 명령어
 
-## 🚀 Project Structure
+- `pnpm install`: 의존성 설치
+- `pnpm dev`: 로컬 개발 서버 실행 (`http://localhost:4321`)
+- `pnpm build`: 프로덕션 빌드 (`dist/`)
+- `pnpm preview`: 빌드 결과 로컬 확인
 
-Inside of your Astro project, you'll see the following folders and files:
+## 환경 변수
 
-```text
-/
-├── public/
-├── src/
-│   └── pages/
-│       └── index.astro
-└── package.json
-```
+- `PUBLIC_USE_MOCK_DATA`
+  - 기본값: `true` (미설정 시 목데이터 사용)
+  - `false`로 설정하면 D1 경로를 사용하도록 전환됩니다.  
+    현재 D1 조회 구현은 TODO 상태입니다.
 
-Astro looks for `.astro` or `.md` files in the `src/pages/` directory. Each page is exposed as a route based on its file name.
+## 주요 디렉토리
 
-There's nothing special about `src/components/`, but that's where we like to put any Astro/React/Vue/Svelte/Preact components.
+- `src/pages`: 라우트 페이지 (`/`, `/page/[page]`, `/posts/[slug]`)
+- `src/components`: UI 컴포넌트 (`PostList`, `ThemeToggle`)
+- `src/lib`: 데이터/DB/유틸/pagination 로직
+- `src/data`: 개발용 목데이터
 
-Any static assets, like images, can be placed in the `public/` directory.
+## 배포
 
-## 🧞 Commands
-
-All commands are run from the root of the project, from a terminal:
-
-| Command                   | Action                                           |
-| :------------------------ | :----------------------------------------------- |
-| `pnpm install`             | Installs dependencies                            |
-| `pnpm dev`             | Starts local dev server at `localhost:4321`      |
-| `pnpm build`           | Build your production site to `./dist/`          |
-| `pnpm preview`         | Preview your build locally, before deploying     |
-| `pnpm astro ...`       | Run CLI commands like `astro add`, `astro check` |
-| `pnpm astro -- --help` | Get help using the Astro CLI                     |
-
-## 👀 Want to learn more?
-
-Feel free to check [our documentation](https://docs.astro.build) or jump into our [Discord server](https://astro.build/chat).
+Cloudflare adapter(`@astrojs/cloudflare`)를 사용합니다.  
+배포 설정은 `wrangler.jsonc`를 참고하세요.

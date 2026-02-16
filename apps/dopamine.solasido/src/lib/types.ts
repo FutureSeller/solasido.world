@@ -1,4 +1,6 @@
 // Database types
+export type PostStatus = 'draft' | 'review' | 'published'
+
 export interface RawData {
   instagram_id: string
   caption: string | null
@@ -27,11 +29,48 @@ export interface BlogPost {
   meta_description: string | null
   body: string | null
   summary: string | null
-  status: 'draft' | 'review' | 'published'
+  status: PostStatus
   created_at: string
   published_at: string | null
   canonical_url: string | null
   og_image_url: string | null
+}
+
+// App-facing view models
+export interface PostAsset {
+  id: number
+  r2Url: string
+  slideIndex: number
+  width: number
+  height: number
+}
+
+export interface BlogPostModel {
+  id: number
+  instagramId: string
+  slug: string
+  title: string
+  metaDescription: string
+  body: string
+  summary: string
+  status: PostStatus
+  createdAt: string
+  publishedAt: string
+  canonicalUrl: string
+  ogImageUrl: string | null
+}
+
+export interface BlogPostWithAssets extends BlogPostModel {
+  assets: PostAsset[]
+}
+
+export interface Pagination {
+  currentPage: number
+  lastPage: number
+  url: {
+    prev?: string
+    next?: string
+  }
 }
 
 // Instagram Graph API types

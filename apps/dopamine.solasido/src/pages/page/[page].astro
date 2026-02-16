@@ -2,42 +2,37 @@
 import Layout from '../../layouts/Layout.astro'
 import PostList from '../../components/PostList.astro'
 import { fetchPublishedPosts } from '../../lib/data'
+import { PAGE_SIZE, buildPagination, getPageItems, getTotalPages } from '../../lib/pagination'
+import type { BlogPostWithAssets } from '../../lib/types'
 import type { GetStaticPaths } from 'astro'
 
 export const getStaticPaths = (async () => {
   const posts = await fetchPublishedPosts()
-  const pageSize = 12
-  const totalPages = Math.ceil(posts.length / pageSize)
+  const totalPages = getTotalPages(posts.length, PAGE_SIZE)
 
   // Generate paths for pages 2 and onwards
   return Array.from({ length: totalPages - 1 }, (_, i) => {
     const pageNum = i + 2 // Start from page 2
-    const startIdx = (pageNum - 1) * pageSize
-    const endIdx = startIdx + pageSize
 
     return {
       params: { page: String(pageNum) },
       props: {
-        posts: posts.slice(startIdx, endIdx),
+        posts: getPageItems(posts, pageNum, PAGE_SIZE),
         currentPage: pageNum,
         lastPage: totalPages,
-        prevUrl: pageNum === 2 ? '/' : `/page/${pageNum - 1}`,
-        nextUrl: pageNum < totalPages ? `/page/${pageNum + 1}` : undefined,
       },
     }
   })
 }) satisfies GetStaticPaths
 
-const { posts, currentPage, lastPage, prevUrl, nextUrl } = Astro.props
-
-const page = {
-  currentPage,
-  lastPage,
-  url: {
-    prev: prevUrl,
-    next: nextUrl,
-  },
+interface Props {
+  posts: BlogPostWithAssets[]
+  currentPage: number
+  lastPage: number
 }
+
+const { posts, currentPage, lastPage } = Astro.props as Props
+const page = buildPagination(currentPage, lastPage)
 ---
 
 <Layout

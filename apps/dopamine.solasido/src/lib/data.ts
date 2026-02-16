@@ -6,40 +6,31 @@
  */
 
 import { getPublishedPosts, getPostBySlug, getAssetsForPost } from '../data/mock-posts'
+import type { BlogPostModel, BlogPostWithAssets, PostAsset } from './types'
 
-const USE_MOCK_DATA = true // Toggle this when D1 is ready
+const USE_MOCK_DATA = import.meta.env.PUBLIC_USE_MOCK_DATA !== 'false'
 
-export interface BlogPostWithAssets {
-  id: number
-  instagramId: string
-  slug: string
-  title: string
-  metaDescription: string
-  body: string
-  summary: string
-  status: 'draft' | 'review' | 'published'
-  createdAt: string
-  publishedAt: string
-  canonicalUrl: string
-  ogImageUrl: string | null
-  assets: Array<{
-    id: number
-    r2Url: string
-    slideIndex: number
-  }>
+function mapAssetsForPost(instagramId: string): PostAsset[] {
+  return getAssetsForPost(instagramId).map((asset) => ({
+    id: asset.id,
+    r2Url: asset.r2Url,
+    slideIndex: asset.slideIndex,
+    width: asset.width,
+    height: asset.height,
+  }))
+}
+
+function attachAssets(post: BlogPostModel): BlogPostWithAssets {
+  return {
+    ...post,
+    assets: mapAssetsForPost(post.instagramId),
+  }
 }
 
 export async function fetchPublishedPosts(): Promise<BlogPostWithAssets[]> {
   if (USE_MOCK_DATA) {
     const posts = getPublishedPosts()
-    return posts.map(post => ({
-      ...post,
-      assets: getAssetsForPost(post.instagramId).map(asset => ({
-        id: asset.id,
-        r2Url: asset.r2Url,
-        slideIndex: asset.slideIndex,
-      }))
-    }))
+    return posts.map(attachAssets)
   }
 
   // TODO: Implement D1 query
@@ -56,14 +47,7 @@ export async function fetchPostBySlug(slug: string): Promise<BlogPostWithAssets 
     const post = getPostBySlug(slug)
     if (!post) return null
 
-    return {
-      ...post,
-      assets: getAssetsForPost(post.instagramId).map(asset => ({
-        id: asset.id,
-        r2Url: asset.r2Url,
-        slideIndex: asset.slideIndex,
-      }))
-    }
+    return attachAssets(post)
   }
 
   // TODO: Implement D1 query

@@ -2,22 +2,12 @@
 import Layout from '../layouts/Layout.astro'
 import PostList from '../components/PostList.astro'
 import { fetchPublishedPosts } from '../lib/data'
+import { PAGE_SIZE, buildPagination, getPageItems, getTotalPages } from '../lib/pagination'
 
 const posts = await fetchPublishedPosts()
-const pageSize = 12
-const totalPages = Math.ceil(posts.length / pageSize)
-
-// First page posts
-const firstPagePosts = posts.slice(0, pageSize)
-
-const page = {
-  currentPage: 1,
-  lastPage: totalPages,
-  url: {
-    prev: undefined,
-    next: totalPages > 1 ? '/page/2' : undefined,
-  },
-}
+const totalPages = getTotalPages(posts.length, PAGE_SIZE)
+const firstPagePosts = getPageItems(posts, 1, PAGE_SIZE)
+const page = buildPagination(1, totalPages)
 ---
 
 <Layout title="Dopamine Blog" description="부부일상툰과 신혼생활 이야기">

@@ -1,20 +1,7 @@
 // Mock data matching the blog_posts schema from studio.solasido.world
 // This will be replaced with actual D1 queries in production
 
-interface MockBlogPost {
-  id: number
-  instagramId: string
-  slug: string
-  title: string
-  metaDescription: string
-  body: string
-  summary: string
-  status: 'draft' | 'review' | 'published'
-  createdAt: string
-  publishedAt: string
-  canonicalUrl: string
-  ogImageUrl: string | null
-}
+import type { BlogPostModel, PostStatus } from '../lib/types'
 
 interface MockAsset {
   id: number
@@ -29,7 +16,7 @@ interface MockAsset {
 }
 
 // Generate additional mock posts for pagination testing
-const generateMockPost = (id: number): MockBlogPost => ({
+const generateMockPost = (id: number): BlogPostModel => ({
   id,
   instagramId: `mock_${id}`,
   slug: `post-${id}`,
@@ -37,14 +24,14 @@ const generateMockPost = (id: number): MockBlogPost => ({
   metaDescription: `${id}번째 테스트 포스트입니다. 페이지네이션 테스트를 위한 샘플 컨텐츠.`,
   body: `<h1>테스트 포스트 #${id}</h1><p>이것은 페이지네이션 테스트를 위한 ${id}번째 포스트입니다.</p>`,
   summary: `${id}번째 테스트 포스트`,
-  status: 'published',
+  status: 'published' satisfies PostStatus,
   createdAt: new Date(Date.now() - id * 86400000).toISOString(),
   publishedAt: new Date(Date.now() - id * 86400000).toISOString(),
   canonicalUrl: `https://instagram.com/p/example${id}`,
   ogImageUrl: null,
 })
 
-export const mockPosts: MockBlogPost[] = [
+export const mockPosts: BlogPostModel[] = [
   {
     id: 1,
     instagramId: 'mock_12345',
@@ -183,10 +170,10 @@ export const mockAssets: MockAsset[] = [
     instagramMediaId: 'mock_12345',
     slideIndex: 0,
     sha256Hash: 'mock_hash_1',
-    r2Key: 'instagram/aa/aabbcc.webp',
-    r2Url: 'https://picsum.photos/seed/couple1/800/600',
-    width: 800,
-    height: 600,
+    r2Key: 'instagram/18095421310812447/0.webp',
+    r2Url: 'https://static-images.solasido.world/instagram/18095421310812447/0.webp',
+    width: 1200,
+    height: 630,
     sizeBytes: 150000,
   },
   {
@@ -230,11 +217,11 @@ export function getAssetsForPost(instagramId: string): MockAsset[] {
 }
 
 // Helper function to get published posts
-export function getPublishedPosts(): MockBlogPost[] {
+export function getPublishedPosts(): BlogPostModel[] {
   return mockPosts.filter((post) => post.status === 'published')
 }
 
 // Helper function to get post by slug
-export function getPostBySlug(slug: string): MockBlogPost | undefined {
+export function getPostBySlug(slug: string): BlogPostModel | undefined {
   return mockPosts.find((post) => post.slug === slug)
 }
