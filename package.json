@@ -4,5 +4,12 @@
   "devDependencies": {
     "@types/better-sqlite3": "^7.6.13",
     "better-sqlite3": "^12.6.2"
+  },
+  "pnpm": {
+    "overrides": {
+      "wrangler": ">=4.59.1",
+      "undici": ">=7.18.2",
+      "mdast-util-to-hast": ">=13.2.1"
+    }
   }
 }
