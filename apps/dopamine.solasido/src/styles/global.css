@@ -1,23 +1,31 @@
 @import "tailwindcss";
 
-@theme {
-  --color-background: #ffffff;
-  --color-foreground: #09090b;
-  --color-muted: #f4f4f5;
-  --color-muted-foreground: #71717a;
-  --color-primary: #18181b;
-  --color-border: #e4e4e7;
+/* Define CSS variables for theming */
+:root {
+  --background-rgb: 255 255 255;
+  --foreground-rgb: 9 9 11;
+  --muted-rgb: 244 244 245;
+  --muted-foreground-rgb: 113 113 122;
+  --primary-rgb: 24 24 27;
+  --border-rgb: 228 228 231;
 }
 
-@media (prefers-color-scheme: dark) {
-  @theme {
-    --color-background: #09090b;
-    --color-foreground: #fafafa;
-    --color-muted: #27272a;
-    --color-muted-foreground: #a1a1aa;
-    --color-primary: #fafafa;
-    --color-border: #27272a;
-  }
+.dark {
+  --background-rgb: 9 9 11;
+  --foreground-rgb: 250 250 250;
+  --muted-rgb: 39 39 42;
+  --muted-foreground-rgb: 161 161 170;
+  --primary-rgb: 250 250 250;
+  --border-rgb: 39 39 42;
+}
+
+@theme {
+  --color-background: rgb(var(--background-rgb));
+  --color-foreground: rgb(var(--foreground-rgb));
+  --color-muted: rgb(var(--muted-rgb));
+  --color-muted-foreground: rgb(var(--muted-foreground-rgb));
+  --color-primary: rgb(var(--primary-rgb));
+  --color-border: rgb(var(--border-rgb));
 }
 
 body {
