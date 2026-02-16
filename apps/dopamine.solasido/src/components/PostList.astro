@@ -1,0 +1,85 @@
+---
+interface Props {
+  posts: any[]
+  page: {
+    currentPage: number
+    lastPage: number
+    url: {
+      prev?: string
+      next?: string
+    }
+  }
+}
+
+const { posts, page } = Astro.props
+---
+
+<div class="container mx-auto px-4 py-8">
+  <header class="mb-12">
+    <h1 class="text-4xl font-bold mb-4">Dopamine Blog</h1>
+    <p class="text-lg opacity-70">부부일상툰과 신혼생활 이야기</p>
+  </header>
+
+  <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-12">
+    {posts.map((post) => (
+      <a
+        href={`/posts/${post.slug}`}
+        class="block group hover:shadow-lg transition-all rounded-lg overflow-hidden border border-border"
+      >
+        <div class="aspect-video overflow-hidden bg-muted">
+          <img
+            src={post.assets[0]?.r2Url || 'https://picsum.photos/800/600'}
+            alt={post.title}
+            class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+          />
+        </div>
+        <div class="p-6">
+          <h2 class="text-2xl font-bold mb-2">{post.title}</h2>
+          <p class="text-sm opacity-60 mb-4 line-clamp-2">{post.metaDescription}</p>
+          <time class="text-xs opacity-50">
+            {new Date(post.publishedAt).toLocaleDateString('ko-KR', {
+              year: 'numeric',
+              month: 'long',
+              day: 'numeric',
+            })}
+          </time>
+        </div>
+      </a>
+    ))}
+  </div>
+
+  {/* Pagination */}
+  {(page.url.prev || page.url.next) && (
+    <nav class="flex justify-center items-center gap-4">
+      {page.url.prev ? (
+        <a
+          href={page.url.prev}
+          class="px-4 py-2 border border-border rounded-lg hover:bg-muted transition-colors"
+        >
+          ← 이전
+        </a>
+      ) : (
+        <span class="px-4 py-2 border border-border rounded-lg opacity-30 cursor-not-allowed">
+          ← 이전
+        </span>
+      )}
+
+      <span class="text-sm opacity-60">
+        {page.currentPage} / {page.lastPage}
+      </span>
+
+      {page.url.next ? (
+        <a
+          href={page.url.next}
+          class="px-4 py-2 border border-border rounded-lg hover:bg-muted transition-colors"
+        >
+          다음 →
+        </a>
+      ) : (
+        <span class="px-4 py-2 border border-border rounded-lg opacity-30 cursor-not-allowed">
+          다음 →
+        </span>
+      )}
+    </nav>
+  )}
+</div>

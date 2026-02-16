@@ -1,0 +1,73 @@
+---
+import Layout from '../../layouts/Layout.astro'
+import { fetchPublishedPosts, fetchPostBySlug } from '../../lib/data'
+import sanitizeHtml from 'sanitize-html'
+
+export async function getStaticPaths() {
+  const posts = await fetchPublishedPosts()
+
+  return posts.map((post) => ({
+    params: { slug: post.slug },
+    props: { post },
+  }))
+}
+
+const { post } = Astro.props
+
+// Sanitize HTML to prevent XSS attacks
+const sanitizedBody = sanitizeHtml(post.body, {
+  allowedTags: ['h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'p', 'a', 'ul', 'ol', 'li', 'blockquote', 'strong', 'em', 'code', 'pre', 'br'],
+  allowedAttributes: {
+    'a': ['href', 'target', 'rel']
+  },
+})
+---
+
+<Layout title={post.title} description={post.metaDescription}>
+  <article class="container mx-auto px-4 py-8 max-w-4xl">
+    <header class="mb-8">
+      <h1 class="text-4xl font-bold mb-4">{post.title}</h1>
+      <time class="text-sm opacity-60">
+        {new Date(post.publishedAt).toLocaleDateString('ko-KR', {
+          year: 'numeric',
+          month: 'long',
+          day: 'numeric',
+        })}
+      </time>
+    </header>
+
+    {post.summary && (
+      <div class="bg-muted p-6 rounded-lg mb-8">
+        <p class="text-lg">{post.summary}</p>
+      </div>
+    )}
+
+    {post.assets && post.assets.length > 0 && (
+      <div class="mb-8 grid grid-cols-1 md:grid-cols-2 gap-4">
+        {post.assets.map((asset, index) => (
+          <img
+            src={asset.r2Url}
+            alt={`Image ${index + 1}`}
+            class="w-full rounded-lg"
+            loading={index === 0 ? 'eager' : 'lazy'}
+          />
+        ))}
+      </div>
+    )}
+
+    <div class="prose prose-lg max-w-none" set:html={sanitizedBody} />
+
+    {post.canonicalUrl && (
+      <footer class="mt-8 pt-8 border-t border-border">
+        <a
+          href={post.canonicalUrl}
+          target="_blank"
+          rel="noopener noreferrer"
+          class="text-primary hover:underline"
+        >
+          View original post →
+        </a>
+      </footer>
+    )}
+  </article>
+</Layout>

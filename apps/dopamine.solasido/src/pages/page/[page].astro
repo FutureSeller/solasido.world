@@ -1,0 +1,48 @@
+---
+import Layout from '../../layouts/Layout.astro'
+import PostList from '../../components/PostList.astro'
+import { fetchPublishedPosts } from '../../lib/data'
+import type { GetStaticPaths } from 'astro'
+
+export const getStaticPaths = (async () => {
+  const posts = await fetchPublishedPosts()
+  const pageSize = 12
+  const totalPages = Math.ceil(posts.length / pageSize)
+
+  // Generate paths for pages 2 and onwards
+  return Array.from({ length: totalPages - 1 }, (_, i) => {
+    const pageNum = i + 2 // Start from page 2
+    const startIdx = (pageNum - 1) * pageSize
+    const endIdx = startIdx + pageSize
+
+    return {
+      params: { page: String(pageNum) },
+      props: {
+        posts: posts.slice(startIdx, endIdx),
+        currentPage: pageNum,
+        lastPage: totalPages,
+        prevUrl: pageNum === 2 ? '/' : `/page/${pageNum - 1}`,
+        nextUrl: pageNum < totalPages ? `/page/${pageNum + 1}` : undefined,
+      },
+    }
+  })
+}) satisfies GetStaticPaths
+
+const { posts, currentPage, lastPage, prevUrl, nextUrl } = Astro.props
+
+const page = {
+  currentPage,
+  lastPage,
+  url: {
+    prev: prevUrl,
+    next: nextUrl,
+  },
+}
+---
+
+<Layout
+  title={`Dopamine Blog - Page ${currentPage}`}
+  description="부부일상툰과 신혼생활 이야기"
+>
+  <PostList posts={posts} page={page} />
+</Layout>

@@ -1,0 +1,25 @@
+---
+import Layout from '../layouts/Layout.astro'
+import PostList from '../components/PostList.astro'
+import { fetchPublishedPosts } from '../lib/data'
+
+const posts = await fetchPublishedPosts()
+const pageSize = 12
+const totalPages = Math.ceil(posts.length / pageSize)
+
+// First page posts
+const firstPagePosts = posts.slice(0, pageSize)
+
+const page = {
+  currentPage: 1,
+  lastPage: totalPages,
+  url: {
+    prev: undefined,
+    next: totalPages > 1 ? '/page/2' : undefined,
+  },
+}
+---
+
+<Layout title="Dopamine Blog" description="부부일상툰과 신혼생활 이야기">
+  <PostList posts={firstPagePosts} page={page} />
+</Layout>
