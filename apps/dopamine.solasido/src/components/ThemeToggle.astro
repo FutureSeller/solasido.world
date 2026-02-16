@@ -1,0 +1,83 @@
+---
+// Theme toggle button
+---
+
+<button
+  data-theme-toggle
+  type="button"
+  class="fixed bottom-6 right-6 p-3 rounded-full bg-muted border border-border hover:bg-background transition-colors shadow-lg z-50"
+  aria-label="Toggle theme"
+  aria-pressed="false"
+>
+  <svg data-theme-icon="light" class="w-5 h-5 hidden" fill="currentColor" viewBox="0 0 20 20">
+    <path d="M10 2a1 1 0 011 1v1a1 1 0 11-2 0V3a1 1 0 011-1zm4 8a4 4 0 11-8 0 4 4 0 018 0zm-.464 4.95l.707.707a1 1 0 001.414-1.414l-.707-.707a1 1 0 00-1.414 1.414zm2.12-10.607a1 1 0 010 1.414l-.706.707a1 1 0 11-1.414-1.414l.707-.707a1 1 0 011.414 0zM17 11a1 1 0 100-2h-1a1 1 0 100 2h1zm-7 4a1 1 0 011 1v1a1 1 0 11-2 0v-1a1 1 0 011-1zM5.05 6.464A1 1 0 106.465 5.05l-.708-.707a1 1 0 00-1.414 1.414l.707.707zm1.414 8.486l-.707.707a1 1 0 01-1.414-1.414l.707-.707a1 1 0 011.414 1.414zM4 11a1 1 0 100-2H3a1 1 0 000 2h1z"></path>
+  </svg>
+  <svg data-theme-icon="dark" class="w-5 h-5 hidden" fill="currentColor" viewBox="0 0 20 20">
+    <path d="M17.293 13.293A8 8 0 016.707 2.707a8.001 8.001 0 1010.586 10.586z"></path>
+  </svg>
+</button>
+
+<script>
+  const THEME_KEY = 'theme';
+  const root = document.documentElement;
+  const themeToggle = document.querySelector('[data-theme-toggle]');
+
+  if (themeToggle instanceof HTMLButtonElement) {
+    const lightIcon = themeToggle.querySelector('[data-theme-icon="light"]');
+    const darkIcon = themeToggle.querySelector('[data-theme-icon="dark"]');
+
+    function getActiveTheme() {
+      return root.classList.contains('dark') ? 'dark' : 'light';
+    }
+
+    function getStoredTheme() {
+      try {
+        const theme = localStorage.getItem(THEME_KEY);
+        return theme === 'dark' || theme === 'light' ? theme : null;
+      } catch (_) {
+        return null;
+      }
+    }
+
+    function updateToggleUI(theme: string) {
+      if (theme === 'dark') {
+        lightIcon?.classList.remove('hidden');
+        darkIcon?.classList.add('hidden');
+        themeToggle.setAttribute('aria-pressed', 'true');
+        themeToggle.setAttribute('aria-label', 'Switch to light mode');
+      } else {
+        lightIcon?.classList.add('hidden');
+        darkIcon?.classList.remove('hidden');
+        themeToggle.setAttribute('aria-pressed', 'false');
+        themeToggle.setAttribute('aria-label', 'Switch to dark mode');
+      }
+    }
+
+    function applyTheme(theme: string, persist: boolean) {
+      root.classList.toggle('dark', theme === 'dark');
+      updateToggleUI(theme);
+
+      if (persist) {
+        try {
+          localStorage.setItem(THEME_KEY, theme);
+        } catch (_) {}
+      }
+    }
+
+    const initialTheme = getActiveTheme();
+    applyTheme(initialTheme, false);
+
+    // Follow system preference changes only until user explicitly chooses a theme.
+    if (!getStoredTheme()) {
+      const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
+      mediaQuery.addEventListener('change', (event) => {
+        applyTheme(event.matches ? 'dark' : 'light', false);
+      });
+    }
+
+    themeToggle.addEventListener('click', () => {
+      const nextTheme = getActiveTheme() === 'dark' ? 'light' : 'dark';
+      applyTheme(nextTheme, true);
+    });
+  }
+</script>
