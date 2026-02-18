@@ -13,10 +13,6 @@ Astro + Tailwind 기반의 정적 블로그 앱입니다.
 
 ## 환경 변수
 
-- `PUBLIC_USE_MOCK_DATA`
-  - 기본값: `false` (미설정 시 D1 데이터 사용)
-  - `true`로 설정하면 목데이터(`src/data/mock-posts.ts`)를 강제 사용합니다.
-
 - Cloudflare D1 바인딩
   - 빌드 단계에서 `wrangler d1 execute`를 사용합니다.
   - 기본 DB 이름은 `dopamine_db`이며 `D1_DATABASE_NAME` 환경변수로 변경할 수 있습니다.
@@ -27,9 +23,14 @@ Astro + Tailwind 기반의 정적 블로그 앱입니다.
 - `src/pages`: 라우트 페이지 (`/`, `/page/[page]`, `/posts/[slug]`)
 - `src/components`: UI 컴포넌트 (`PostList`, `ThemeToggle`)
 - `src/lib`: 데이터/DB/유틸/pagination 로직
-- `src/data`: 개발용 목데이터
 
 ## 배포
 
 Cloudflare adapter(`@astrojs/cloudflare`)를 사용합니다.  
 배포 설정은 `wrangler.jsonc`를 참고하세요.
+
+Cloudflare Pages의 Git 연동 빌드를 사용할 경우, Pages 프로젝트 환경 변수(Production/Preview)에 아래 값을 설정해야 빌드 시 D1 조회가 가능합니다.
+
+- `CLOUDFLARE_API_TOKEN` (D1 read 권한 포함)
+- `CLOUDFLARE_ACCOUNT_ID`
+- `D1_DATABASE_NAME` (기본값 `dopamine_db`, 필요 시만 설정)
