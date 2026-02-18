@@ -5,6 +5,7 @@ import { SITE_NAME } from '../../lib/site-meta'
 import { buildBlogPostingStructuredData } from '../../lib/structured-data'
 import { formatKoreanDate, getHostname } from '../../lib/utils'
 import sanitizeHtml from 'sanitize-html'
+import { marked } from 'marked'
 import type { BlogPostWithAssets } from '../../lib/types'
 
 export async function getStaticPaths() {
@@ -28,11 +29,28 @@ interface Props {
 
 const { post, prevPost, nextPost } = Astro.props as Props
 
-// Sanitize HTML to prevent XSS attacks
-const sanitizedBody = sanitizeHtml(post.body, {
-  allowedTags: ['h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'p', 'a', 'ul', 'ol', 'li', 'blockquote', 'strong', 'em', 'code', 'pre', 'br'],
+const markdownBody = post.assets.length > 0
+  ? post.body.replace(/!\[[\s\S]*?\]\([^)]+\)/g, '').trim()
+  : post.body
+
+const renderedBody = marked.parse(markdownBody, {
+  async: false,
+  gfm: true,
+  breaks: true,
+})
+
+// Render markdown and sanitize HTML to prevent XSS attacks
+const sanitizedBody = sanitizeHtml(renderedBody, {
+  allowedTags: [
+    'h1', 'h2', 'h3', 'h4', 'h5', 'h6',
+    'p', 'a', 'ul', 'ol', 'li', 'blockquote',
+    'strong', 'em', 'code', 'pre', 'br', 'hr',
+    'table', 'thead', 'tbody', 'tr', 'th', 'td',
+    'img',
+  ],
   allowedAttributes: {
-    'a': ['href', 'target', 'rel']
+    'a': ['href', 'target', 'rel'],
+    'img': ['src', 'alt', 'title', 'width', 'height', 'loading'],
   },
 })
 
@@ -115,17 +133,21 @@ const structuredData = buildBlogPostingStructuredData(post, pageUrl)
     )}
 
     {post.assets && post.assets.length > 0 && (
-      <div class="mb-8 grid grid-cols-1 md:grid-cols-2 gap-4">
-        {post.assets.map((asset, index) => (
-          <div class="aspect-[4/5] overflow-hidden rounded-lg bg-muted">
-            <img
-              src={asset.r2Url}
-              alt={`Image ${index + 1}`}
-              class="w-full h-full object-cover"
-              loading={index === 0 ? 'eager' : 'lazy'}
-            />
-          </div>
-        ))}
+      <div class="mb-8 w-full overflow-x-auto">
+        <div class="flex w-max min-w-full gap-4 snap-x snap-mandatory pb-2">
+          {post.assets.map((asset, index) => (
+            <div class="snap-start shrink-0 w-[85vw] max-w-[520px] sm:w-[70vw] md:w-[52vw] lg:w-[44vw] overflow-hidden rounded-lg bg-muted">
+              <img
+                src={asset.r2Url}
+                alt={`Image ${index + 1}`}
+                width={asset.width}
+                height={asset.height}
+                class="block w-full h-auto"
+                loading={index === 0 ? 'eager' : 'lazy'}
+              />
+            </div>
+          ))}
+        </div>
       </div>
     )}
 
