@@ -6,6 +6,13 @@
     "nodejs_compat",
     "global_fetch_strictly_public"
   ],
+  "d1_databases": [
+    {
+      "binding": "DB",
+      "database_name": "dopamine_db",
+      "database_id": "5769fa3c-4809-423b-ade5-0a5607ad0b0f"
+    }
+  ],
 	"assets": {
 		"binding": "ASSETS",
 		"directory": "./dist"

@@ -3,7 +3,6 @@ import Layout from '../layouts/Layout.astro'
 import PostList from '../components/PostList.astro'
 import { fetchPublishedPosts } from '../lib/data'
 import { PAGE_SIZE, buildPagination, getPageItems, getTotalPages } from '../lib/pagination'
-
 const posts = await fetchPublishedPosts()
 const totalPages = getTotalPages(posts.length, PAGE_SIZE)
 const firstPagePosts = getPageItems(posts, 1, PAGE_SIZE)

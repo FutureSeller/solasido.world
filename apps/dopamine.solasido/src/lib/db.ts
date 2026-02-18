@@ -1,9 +1,19 @@
-import type { BlogPost } from './types'
+import type { Asset, BlogPost } from './types'
 
 export class DatabaseClient {
   constructor(private db: D1Database) {}
 
   // Read-only blog queries used by this app
+  async getAssetsByInstagramId(instagramId: string): Promise<Asset[]> {
+    const result = await this.db
+      .prepare(
+        'SELECT * FROM assets WHERE instagram_media_id = ? ORDER BY slide_index ASC'
+      )
+      .bind(instagramId)
+      .all<Asset>()
+    return result.results
+  }
+
   async getBlogPostBySlug(slug: string): Promise<BlogPost | null> {
     const result = await this.db
       .prepare('SELECT * FROM blog_posts WHERE slug = ?')
