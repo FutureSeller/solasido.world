@@ -1,6 +1,6 @@
 ---
 import { formatKoreanDate, resizeImageUrl } from '../lib/utils'
-import { SITE_DESCRIPTION, SITE_NAME } from '../lib/site-meta'
+import { AUTHOR_INSTAGRAM_URL, SITE_DESCRIPTION, SITE_NAME } from '../lib/site-meta'
 import type { BlogPostWithAssets, Pagination } from '../lib/types'
 
 interface Props {
@@ -9,21 +9,72 @@ interface Props {
 }
 
 const { posts, page } = Astro.props
+const hasPagination = Boolean(page.url.prev || page.url.next)
 ---
 
-<div class="container mx-auto px-4 py-8">
+<div class="container mx-auto px-4 py-8" data-post-list data-view="grid">
   <header class="mb-12">
-    <h1 class="text-4xl font-bold mb-4">{SITE_NAME}</h1>
+    <div class="flex flex-wrap items-start justify-between gap-4 mb-4">
+      <h1 class="text-4xl font-bold">{SITE_NAME}</h1>
+      <div class="flex items-center gap-2">
+        <div class="inline-flex h-10 items-center rounded-full border border-border bg-background p-1">
+          <button
+            type="button"
+            class="inline-flex h-8 w-8 cursor-pointer items-center justify-center rounded-full opacity-70 transition-colors hover:opacity-100"
+            data-view-toggle="grid"
+            aria-pressed="true"
+            aria-label="Grid view"
+          >
+            <svg class="h-4 w-4" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+              <rect x="3" y="3" width="7" height="7" rx="1.5" />
+              <rect x="14" y="3" width="7" height="7" rx="1.5" />
+              <rect x="3" y="14" width="7" height="7" rx="1.5" />
+              <rect x="14" y="14" width="7" height="7" rx="1.5" />
+            </svg>
+            <span class="sr-only">Grid</span>
+          </button>
+          <button
+            type="button"
+            class="inline-flex h-8 w-8 cursor-pointer items-center justify-center rounded-full opacity-70 transition-colors hover:opacity-100"
+            data-view-toggle="list"
+            aria-pressed="false"
+            aria-label="List view"
+          >
+            <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true">
+              <line x1="4" y1="7" x2="20" y2="7" stroke-width="2" stroke-linecap="round" />
+              <line x1="4" y1="12" x2="20" y2="12" stroke-width="2" stroke-linecap="round" />
+              <line x1="4" y1="17" x2="20" y2="17" stroke-width="2" stroke-linecap="round" />
+            </svg>
+            <span class="sr-only">List</span>
+          </button>
+        </div>
+        <a
+          href={AUTHOR_INSTAGRAM_URL}
+          target="_blank"
+          rel="noopener noreferrer"
+          class="inline-flex h-10 items-center gap-2 rounded-full border border-border bg-background px-4 text-sm font-semibold shadow-sm hover:bg-muted transition-colors"
+        >
+          <svg class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true">
+            <rect x="3" y="3" width="18" height="18" rx="5" stroke-width="2" />
+            <circle cx="12" cy="12" r="4" stroke-width="2" />
+            <circle cx="17.5" cy="6.5" r="1" fill="currentColor" stroke="none" />
+          </svg>
+          <span>@solasido.pamine</span>
+          <span aria-hidden="true">↗</span>
+        </a>
+      </div>
+    </div>
     <p class="text-lg opacity-70">{SITE_DESCRIPTION}</p>
   </header>
 
-  <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-12">
+  <div class="mb-12" data-posts-container>
     {posts.map((post) => (
       <a
         href={`/posts/${post.slug}`}
-        class="block group hover:shadow-lg transition-all rounded-lg overflow-hidden border border-border"
+        class="group rounded-lg overflow-hidden border border-border transition-all hover:shadow-lg"
+        data-post-card
       >
-        <div class="aspect-square overflow-hidden bg-muted">
+        <div class="aspect-square overflow-hidden bg-muted" data-post-media>
           <img
             src={post.assets[0]?.r2Url
               ? resizeImageUrl(post.assets[0].r2Url, 800, 800)
@@ -34,7 +85,7 @@ const { posts, page } = Astro.props
             class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
           />
         </div>
-        <div class="p-6">
+        <div class="p-4" data-post-content>
           <h2 class="text-2xl font-bold mb-2">{post.title}</h2>
           <p class="text-sm opacity-60 mb-4 line-clamp-2">{post.metaDescription}</p>
           <time class="text-xs opacity-50">
@@ -46,7 +97,7 @@ const { posts, page } = Astro.props
   </div>
 
   {/* Pagination */}
-  {(page.url.prev || page.url.next) && (
+  {hasPagination && (
     <nav class="flex justify-center items-center gap-4">
       {page.url.prev ? (
         <a
@@ -80,3 +131,111 @@ const { posts, page } = Astro.props
     </nav>
   )}
 </div>
+
+<style>
+  [data-post-list][data-view='grid'] [data-posts-container] {
+    display: grid;
+    grid-template-columns: repeat(1, minmax(0, 1fr));
+    gap: 1.5rem;
+  }
+
+  @media (min-width: 768px) {
+    [data-post-list][data-view='grid'] [data-posts-container] {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+  }
+
+  @media (min-width: 1024px) {
+    [data-post-list][data-view='grid'] [data-posts-container] {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+  }
+
+  [data-post-list][data-view='list'] [data-posts-container] {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+  }
+
+  [data-post-list][data-view='list'] [data-post-card] {
+    display: flex;
+    align-items: stretch;
+  }
+
+  [data-post-list][data-view='list'] [data-post-media] {
+    width: 180px;
+    min-width: 180px;
+    aspect-ratio: 4 / 3;
+  }
+
+  [data-post-list][data-view='list'] [data-post-content] {
+    flex: 1;
+    padding: 0.875rem;
+  }
+
+  @media (max-width: 640px) {
+    [data-post-list][data-view='list'] [data-post-card] {
+      display: block;
+    }
+
+    [data-post-list][data-view='list'] [data-post-media] {
+      width: 100%;
+      min-width: 0;
+    }
+  }
+
+  [data-post-list] [data-view-toggle][aria-pressed='true'] {
+    background: var(--color-muted);
+    opacity: 1;
+  }
+</style>
+
+<script is:inline>
+  (() => {
+    const STORAGE_KEY = 'post_list_view';
+    const SELECTOR = {
+      root: '[data-post-list]',
+      toggle: '[data-view-toggle]',
+      valueAttr: 'data-view-toggle',
+    };
+    const roots = document.querySelectorAll(SELECTOR.root);
+
+    const readStoredView = () => {
+      try {
+        return localStorage.getItem(STORAGE_KEY);
+      } catch (_) {
+        return null;
+      }
+    };
+
+    const writeStoredView = (view) => {
+      try {
+        localStorage.setItem(STORAGE_KEY, view);
+      } catch (_) {}
+    };
+
+    roots.forEach((root) => {
+      const buttons = root.querySelectorAll(SELECTOR.toggle);
+      if (!buttons.length) return;
+
+      const applyView = (view) => {
+        const safeView = view === 'list' ? 'list' : 'grid';
+        root.setAttribute('data-view', safeView);
+        buttons.forEach((button) => {
+          const isActive = button.getAttribute(SELECTOR.valueAttr) === safeView;
+          button.setAttribute('aria-pressed', isActive ? 'true' : 'false');
+        });
+      };
+
+      applyView(readStoredView());
+
+      buttons.forEach((button) => {
+        button.addEventListener('click', () => {
+          const nextView = button.getAttribute(SELECTOR.valueAttr) || 'grid';
+          applyView(nextView);
+          writeStoredView(nextView);
+        });
+      });
+    });
+  })();
+</script>
