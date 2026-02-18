@@ -70,7 +70,7 @@ const hasPagination = Boolean(page.url.prev || page.url.next)
   <div class="mb-12" data-posts-container>
     {posts.map((post) => (
       <a
-        href={`/posts/${post.slug}`}
+        href={`/posts/${post.slug}/`}
         class="group rounded-lg overflow-hidden border border-border transition-all hover:shadow-lg"
         data-post-card
       >

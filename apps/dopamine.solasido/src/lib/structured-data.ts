@@ -73,7 +73,7 @@ export function buildCollectionPageStructuredData({
       itemListElement: posts.map((post, index) => ({
         '@type': 'ListItem',
         position: positionOffset + index + 1,
-        url: `${origin}/posts/${post.slug}`,
+        url: `${origin}/posts/${post.slug}/`,
         name: post.title,
         datePublished: post.publishedAt,
       })),

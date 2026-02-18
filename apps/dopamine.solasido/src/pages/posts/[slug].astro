@@ -208,7 +208,7 @@ const instagramSourceUrl = post.instagramPermalink || post.canonicalUrl
         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
           {prevPost ? (
             <a
-              href={`/posts/${prevPost.slug}`}
+              href={`/posts/${prevPost.slug}/`}
               class="group p-4 border border-border rounded-lg hover:bg-muted transition-colors"
             >
               <div class="text-xs opacity-60 mb-2">← 이전 포스트</div>
@@ -222,7 +222,7 @@ const instagramSourceUrl = post.instagramPermalink || post.canonicalUrl
 
           {nextPost && (
             <a
-              href={`/posts/${nextPost.slug}`}
+              href={`/posts/${nextPost.slug}/`}
               class="group p-4 border border-border rounded-lg hover:bg-muted transition-colors text-right md:text-right"
             >
               <div class="text-xs opacity-60 mb-2">다음 포스트 →</div>

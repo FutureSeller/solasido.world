@@ -24,8 +24,8 @@ export function buildPagination(
     currentPage,
     lastPage,
     url: {
-      prev: currentPage > 1 ? (currentPage === 2 ? '/' : `/page/${currentPage - 1}`) : undefined,
-      next: currentPage < lastPage ? `/page/${currentPage + 1}` : undefined,
+      prev: currentPage > 1 ? (currentPage === 2 ? '/' : `/page/${currentPage - 1}/`) : undefined,
+      next: currentPage < lastPage ? `/page/${currentPage + 1}/` : undefined,
     },
   }
 }
