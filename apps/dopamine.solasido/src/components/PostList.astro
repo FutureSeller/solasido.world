@@ -82,7 +82,7 @@ const hasPagination = Boolean(page.url.prev || page.url.next)
             alt={post.title}
             width="800"
             height="800"
-            class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+            class="block w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
           />
         </div>
         <div class="p-4" data-post-content>
@@ -165,7 +165,9 @@ const hasPagination = Boolean(page.url.prev || page.url.next)
   [data-post-list][data-view='list'] [data-post-media] {
     width: 180px;
     min-width: 180px;
-    aspect-ratio: 4 / 3;
+    height: auto;
+    aspect-ratio: auto;
+    align-self: stretch;
   }
 
   [data-post-list][data-view='list'] [data-post-content] {
@@ -175,12 +177,23 @@ const hasPagination = Boolean(page.url.prev || page.url.next)
 
   @media (max-width: 640px) {
     [data-post-list][data-view='list'] [data-post-card] {
-      display: block;
+      display: flex;
+      align-items: stretch;
     }
 
     [data-post-list][data-view='list'] [data-post-media] {
-      width: 100%;
-      min-width: 0;
+      width: 120px;
+      min-width: 120px;
+      height: auto;
+    }
+
+    [data-post-list][data-view='list'] [data-post-content] h2 {
+      font-size: 1.1rem;
+      line-height: 1.35;
+    }
+
+    [data-post-list][data-view='list'] [data-post-content] {
+      padding: 0.625rem 0.75rem;
     }
   }
 

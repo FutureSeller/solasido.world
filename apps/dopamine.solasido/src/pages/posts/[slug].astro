@@ -156,13 +156,15 @@ const instagramSourceUrl = post.instagramPermalink || post.canonicalUrl
                 class="shrink-0 basis-full"
                 data-carousel-slide
               >
-                <div class="mx-auto w-[min(92vw,700px)] overflow-hidden rounded-lg bg-muted">
+                <div
+                  class="mx-auto w-[min(92vw,700px)] overflow-hidden rounded-lg"
+                >
                   <img
                     src={asset.r2Url}
                     alt={`Image ${index + 1}`}
                     width={asset.width}
                     height={asset.height}
-                    class="block w-full h-auto"
+                    class="block w-full h-auto bg-muted"
                     loading={index === 0 ? 'eager' : 'lazy'}
                   />
                 </div>
