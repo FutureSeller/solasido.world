@@ -55,12 +55,23 @@ const sanitizedBody = sanitizeHtml(renderedBody, {
 })
 
 const pageUrl = Astro.url.href
+const metaDescription = post.metaDescription || post.summary
+const metaImage = post.ogImageUrl || post.assets[0]?.r2Url
 const structuredData = buildBlogPostingStructuredData(post, pageUrl)
 ---
 
 <Layout
   title={post.title}
-  description={post.metaDescription}
+  description={metaDescription}
+  ogTitle={post.title}
+  ogDescription={metaDescription}
+  ogImage={metaImage}
+  ogUrl={pageUrl}
+  ogType="article"
+  twitterCard="summary_large_image"
+  twitterTitle={post.title}
+  twitterDescription={metaDescription}
+  twitterImage={metaImage}
   structuredData={structuredData}
 >
   <article class="container mx-auto px-4 py-8 max-w-4xl">
