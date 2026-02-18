@@ -8,7 +8,6 @@ Astro + Tailwind 기반의 정적 블로그 앱입니다.
 - `pnpm install`: 의존성 설치
 - `pnpm dev`: 로컬 개발 서버 실행 (`http://localhost:4321`)
 - `pnpm build`: 프로덕션 빌드 (`dist/`)
-- `pnpm run deploy`: 빌드 + Cloudflare 배포
 - `pnpm preview`: 빌드 결과 로컬 확인
 
 ## 환경 변수
@@ -26,10 +25,13 @@ Astro + Tailwind 기반의 정적 블로그 앱입니다.
 
 ## 배포
 
-Cloudflare adapter(`@astrojs/cloudflare`)를 사용합니다.  
-배포 설정은 `wrangler.jsonc`를 참고하세요.
+Cloudflare Pages Git 연동 배포를 사용합니다.
 
-Cloudflare Pages의 Git 연동 빌드를 사용할 경우, Pages 프로젝트 환경 변수(Production/Preview)에 아래 값을 설정해야 빌드 시 D1 조회가 가능합니다.
+- Root directory: `apps/dopamine.solasido`
+- Build command: `pnpm build`
+- Build output directory: `dist`
+
+Pages 프로젝트 환경 변수(Production/Preview)에 아래 값을 설정해야 빌드 시 D1 조회가 가능합니다.
 
 - `CLOUDFLARE_API_TOKEN` (D1 read 권한 포함)
 - `CLOUDFLARE_ACCOUNT_ID`
