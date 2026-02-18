@@ -42,6 +42,9 @@ function serializeStructuredData(data: Record<string, unknown>): string {
   // Prevent accidental script tag breaks in inline JSON-LD.
   return JSON.stringify(data).replace(/</g, '\\u003c')
 }
+
+const gaMeasurementId = import.meta.env.PUBLIC_GA_MEASUREMENT_ID
+const gscVerification = import.meta.env.PUBLIC_GSC_VERIFICATION
 ---
 
 <!doctype html>
@@ -49,6 +52,7 @@ function serializeStructuredData(data: Record<string, unknown>): string {
   <head>
     <meta charset="UTF-8" />
     <meta name="description" content={description || SITE_DESCRIPTION} />
+    {gscVerification && <meta name="google-site-verification" content={gscVerification} />}
     {ogTitle && <meta property="og:title" content={ogTitle} />}
     {ogDescription && <meta property="og:description" content={ogDescription} />}
     {ogImage && <meta property="og:image" content={ogImage} />}
@@ -85,6 +89,17 @@ function serializeStructuredData(data: Record<string, unknown>): string {
         document.documentElement.classList.toggle('dark', theme === 'dark');
       })();
     </script>
+    {gaMeasurementId && (
+      <>
+        <script async src={`https://www.googletagmanager.com/gtag/js?id=${gaMeasurementId}`}></script>
+        <script is:inline define:vars={{ gaMeasurementId }}>
+          window.dataLayer = window.dataLayer || [];
+          function gtag(){dataLayer.push(arguments);}
+          gtag('js', new Date());
+          gtag('config', gaMeasurementId);
+        </script>
+      </>
+    )}
   </head>
   <body class="min-h-screen bg-background font-sans antialiased">
     <div class="relative flex min-h-screen flex-col">

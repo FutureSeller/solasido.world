@@ -16,6 +16,10 @@ Astro + Tailwind 기반의 정적 블로그 앱입니다.
   - 빌드 단계에서 `wrangler d1 execute`를 사용합니다.
   - 기본 DB 이름은 `dopamine_db`이며 `D1_DATABASE_NAME` 환경변수로 변경할 수 있습니다.
   - 기본 모드는 원격 조회이며 `D1_REMOTE=false`로 로컬 조회로 전환할 수 있습니다.
+- SEO/분석
+  - `PUBLIC_GA_MEASUREMENT_ID`: Google Analytics 4 측정 ID (`G-XXXXXXXXXX`)
+  - `PUBLIC_GSC_VERIFICATION`: Search Console HTML 태그 인증 코드  
+    (`<meta name="google-site-verification" content="...">`의 `content` 값)
 
 ## 주요 디렉토리
 
