@@ -3,6 +3,8 @@ import Layout from '../../layouts/Layout.astro'
 import PostList from '../../components/PostList.astro'
 import { fetchPublishedPosts } from '../../lib/data'
 import { PAGE_SIZE, buildPagination, getPageItems, getTotalPages } from '../../lib/pagination'
+import { SITE_DESCRIPTION, SITE_NAME } from '../../lib/site-meta'
+import { buildCollectionPageStructuredData } from '../../lib/structured-data'
 import type { BlogPostWithAssets } from '../../lib/types'
 import type { GetStaticPaths } from 'astro'
 
@@ -32,11 +34,23 @@ interface Props {
 
 const { posts, currentPage, lastPage } = Astro.props as Props
 const page = buildPagination(currentPage, lastPage)
+const pageUrl = Astro.url.href
+const origin = Astro.url.origin
+const basePosition = (currentPage - 1) * PAGE_SIZE
+const structuredData = buildCollectionPageStructuredData({
+  pageUrl,
+  origin,
+  posts,
+  pageName: `${SITE_NAME} - Page ${currentPage}`,
+  positionOffset: basePosition,
+  includeBlogParent: true,
+})
 ---
 
 <Layout
-  title={`Dopamine Blog - Page ${currentPage}`}
-  description="부부일상툰과 신혼생활 이야기"
+  title={`${SITE_NAME} - Page ${currentPage}`}
+  description={SITE_DESCRIPTION}
+  structuredData={structuredData}
 >
   <PostList posts={posts} page={page} />
 </Layout>

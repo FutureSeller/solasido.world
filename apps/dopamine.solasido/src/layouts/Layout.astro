@@ -1,24 +1,42 @@
 ---
 import '../styles/global.css'
 import ThemeToggle from '../components/ThemeToggle.astro'
+import { SITE_DESCRIPTION } from '../lib/site-meta'
 
 interface Props {
   title: string
   description?: string
+  structuredData?: Record<string, unknown> | Record<string, unknown>[]
 }
 
-const { title, description } = Astro.props
+const { title, description, structuredData } = Astro.props as Props
+const structuredDataList = Array.isArray(structuredData)
+  ? structuredData
+  : structuredData
+    ? [structuredData]
+    : []
+
+function serializeStructuredData(data: Record<string, unknown>): string {
+  // Prevent accidental script tag breaks in inline JSON-LD.
+  return JSON.stringify(data).replace(/</g, '\\u003c')
+}
 ---
 
 <!doctype html>
 <html lang="ko">
   <head>
     <meta charset="UTF-8" />
-    <meta name="description" content={description || "부부일상툰과 신혼생활 이야기"} />
+    <meta name="description" content={description || SITE_DESCRIPTION} />
     <meta name="viewport" content="width=device-width" />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <meta name="generator" content={Astro.generator} />
     <title>{title}</title>
+    {structuredDataList.map((data) => (
+      <script
+        type="application/ld+json"
+        set:html={serializeStructuredData(data)}
+      />
+    ))}
     <script is:inline>
       // Prevent FOUC by setting theme before page renders
       (function() {

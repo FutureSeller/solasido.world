@@ -1,0 +1,6 @@
+export const SITE_NAME = 'Dopamine Blog'
+export const SITE_DESCRIPTION = '부부일상툰과 신혼생활 이야기'
+export const SITE_URL = 'https://solasido.world'
+export const PUBLISHER_NAME = 'solasido.world'
+export const AUTHOR_NAME = '여우 YEOWOO'
+export const AUTHOR_INSTAGRAM_URL = 'https://instagram.com/solasido.pamine'

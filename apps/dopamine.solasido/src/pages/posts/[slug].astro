@@ -1,6 +1,8 @@
 ---
 import Layout from '../../layouts/Layout.astro'
 import { fetchPublishedPosts } from '../../lib/data'
+import { SITE_NAME } from '../../lib/site-meta'
+import { buildBlogPostingStructuredData } from '../../lib/structured-data'
 import { formatKoreanDate, getHostname } from '../../lib/utils'
 import sanitizeHtml from 'sanitize-html'
 import type { BlogPostWithAssets } from '../../lib/types'
@@ -33,9 +35,16 @@ const sanitizedBody = sanitizeHtml(post.body, {
     'a': ['href', 'target', 'rel']
   },
 })
+
+const pageUrl = Astro.url.href
+const structuredData = buildBlogPostingStructuredData(post, pageUrl)
 ---
 
-<Layout title={post.title} description={post.metaDescription}>
+<Layout
+  title={post.title}
+  description={post.metaDescription}
+  structuredData={structuredData}
+>
   <article class="container mx-auto px-4 py-8 max-w-4xl">
     <a
       href="/"
@@ -44,7 +53,7 @@ const sanitizedBody = sanitizeHtml(post.body, {
       <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
       </svg>
-      Dopamine Blog
+      {SITE_NAME}
     </a>
 
     <header class="mb-8">
