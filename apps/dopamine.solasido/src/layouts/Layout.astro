@@ -1,7 +1,7 @@
 ---
 import '../styles/global.css'
 import ThemeToggle from '../components/ThemeToggle.astro'
-import { SITE_DESCRIPTION } from '../lib/site-meta'
+import { SITE_DESCRIPTION, SITE_NAME } from '../lib/site-meta'
 
 interface Props {
   title: string
@@ -65,6 +65,7 @@ const gscVerification = import.meta.env.PUBLIC_GSC_VERIFICATION
     <meta name="viewport" content="width=device-width" />
     <link rel="icon" type="image/x-icon" href="/favicon.ico" />
     <link rel="alternate icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="alternate" type="application/rss+xml" title={SITE_NAME} href="/rss.xml" />
     <meta name="generator" content={Astro.generator} />
     <title>{title}</title>
     {structuredDataList.map((data) => (
