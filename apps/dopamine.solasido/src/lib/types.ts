@@ -48,6 +48,7 @@ export interface PostAsset {
 export interface BlogPostModel {
   id: number
   instagramId: string
+  instagramPermalink: string | null
   slug: string
   title: string
   metaDescription: string

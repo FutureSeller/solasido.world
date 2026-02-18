@@ -29,7 +29,10 @@ interface Props {
 
 const { post, prevPost, nextPost } = Astro.props as Props
 
-const markdownBody = post.assets.length > 0
+const hasAssets = post.assets.length > 0
+const firstAsset = post.assets[0]
+
+const markdownBody = hasAssets
   ? post.body.replace(/!\[[\s\S]*?\]\([^)]+\)/g, '').trim()
   : post.body
 
@@ -58,6 +61,7 @@ const pageUrl = Astro.url.href
 const metaDescription = post.metaDescription || post.summary
 const metaImage = post.ogImageUrl || post.assets[0]?.r2Url
 const structuredData = buildBlogPostingStructuredData(post, pageUrl)
+const instagramSourceUrl = post.instagramPermalink || post.canonicalUrl
 ---
 
 <Layout
@@ -74,7 +78,7 @@ const structuredData = buildBlogPostingStructuredData(post, pageUrl)
   twitterImage={metaImage}
   structuredData={structuredData}
 >
-  <article class="container mx-auto px-4 py-8 max-w-4xl">
+  <article class="mx-auto w-[min(92vw,700px)] py-8">
     <a
       href="/"
       class="inline-flex items-center gap-2 text-sm opacity-60 hover:opacity-100 transition-opacity mb-8"
@@ -93,9 +97,9 @@ const structuredData = buildBlogPostingStructuredData(post, pageUrl)
     </header>
 
     {/* Instagram Source Link */}
-    {post.canonicalUrl && (
+    {instagramSourceUrl && (
       <a
-        href={post.canonicalUrl}
+        href={instagramSourceUrl}
         target="_blank"
         rel="noopener noreferrer"
         class="block group mb-8"
@@ -118,16 +122,16 @@ const structuredData = buildBlogPostingStructuredData(post, pageUrl)
                 {post.title} · {formatKoreanDate(post.publishedAt)}
               </div>
               <div class="text-xs opacity-40 mt-2">
-                {getHostname(post.canonicalUrl)}
+                {getHostname(instagramSourceUrl)}
               </div>
             </div>
-            {post.assets && post.assets.length > 0 && (
+            {hasAssets && firstAsset && (
               <div class="flex-shrink-0 hidden sm:block">
                 <img
-                  src={post.assets[0].r2Url}
+                  src={firstAsset.r2Url}
                   alt="Preview"
-                  width={post.assets[0].width}
-                  height={post.assets[0].height}
+                  width={firstAsset.width}
+                  height={firstAsset.height}
                   class="w-20 h-20 object-cover rounded-lg"
                 />
               </div>
@@ -143,21 +147,53 @@ const structuredData = buildBlogPostingStructuredData(post, pageUrl)
       </div>
     )}
 
-    {post.assets && post.assets.length > 0 && (
-      <div class="mb-8 w-full overflow-x-auto">
-        <div class="flex w-max min-w-full gap-4 snap-x snap-mandatory pb-2">
-          {post.assets.map((asset, index) => (
-            <div class="snap-start shrink-0 w-[85vw] max-w-[520px] sm:w-[70vw] md:w-[52vw] lg:w-[44vw] overflow-hidden rounded-lg bg-muted">
-              <img
-                src={asset.r2Url}
-                alt={`Image ${index + 1}`}
-                width={asset.width}
-                height={asset.height}
-                class="block w-full h-auto"
-                loading={index === 0 ? 'eager' : 'lazy'}
-              />
-            </div>
-          ))}
+    {hasAssets && (
+      <div class="mb-8 w-full" data-carousel>
+        <div class="w-full overflow-hidden" data-carousel-viewport>
+          <div class="flex gap-4 pb-2" data-carousel-container>
+            {post.assets.map((asset, index) => (
+              <div
+                class="shrink-0 basis-full"
+                data-carousel-slide
+              >
+                <div class="mx-auto w-[min(92vw,700px)] overflow-hidden rounded-lg bg-muted">
+                  <img
+                    src={asset.r2Url}
+                    alt={`Image ${index + 1}`}
+                    width={asset.width}
+                    height={asset.height}
+                    class="block w-full h-auto"
+                    loading={index === 0 ? 'eager' : 'lazy'}
+                  />
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+        <div class="mt-3 flex items-center justify-center gap-3">
+          {post.assets.length > 1 && (
+            <>
+              <button
+                type="button"
+                class="rounded-md border border-border bg-background px-4 py-2 text-sm font-medium hover:bg-muted disabled:opacity-40 disabled:cursor-not-allowed"
+                data-carousel-prev
+                aria-label="Previous image"
+              >
+                Prev
+              </button>
+              <button
+                type="button"
+                class="rounded-md border border-border bg-background px-4 py-2 text-sm font-medium hover:bg-muted disabled:opacity-40 disabled:cursor-not-allowed"
+                data-carousel-next
+                aria-label="Next image"
+              >
+                Next
+              </button>
+            </>
+          )}
+          <div class="text-sm opacity-70">
+            <span data-carousel-current>1</span> / {post.assets.length}
+          </div>
         </div>
       </div>
     )}
@@ -198,3 +234,57 @@ const structuredData = buildBlogPostingStructuredData(post, pageUrl)
     )}
   </article>
 </Layout>
+
+<script>
+  import EmblaCarousel from 'embla-carousel';
+
+  const SELECTOR = {
+    root: '[data-carousel]',
+    viewport: '[data-carousel-viewport]',
+    slide: '[data-carousel-slide]',
+    prev: '[data-carousel-prev]',
+    next: '[data-carousel-next]',
+    current: '[data-carousel-current]',
+  };
+
+  const initCarousel = () => {
+    const root = document.querySelector(SELECTOR.root);
+    if (!root) return;
+
+    const viewport = root.querySelector(SELECTOR.viewport);
+    const slides = root.querySelectorAll(SELECTOR.slide);
+    const prevButton = root.querySelector(SELECTOR.prev);
+    const nextButton = root.querySelector(SELECTOR.next);
+    const currentText = root.querySelector(SELECTOR.current);
+
+    if (!viewport || slides.length === 0 || !currentText) return;
+
+    const embla = EmblaCarousel(viewport, {
+      loop: false,
+      align: 'start',
+      containScroll: 'trimSnaps',
+      skipSnaps: false,
+      dragFree: false,
+    });
+
+    const updateControls = () => {
+      const index = embla.selectedScrollSnap();
+      currentText.textContent = String(index + 1);
+      if (prevButton) prevButton.disabled = !embla.canScrollPrev();
+      if (nextButton) nextButton.disabled = !embla.canScrollNext();
+    };
+
+    prevButton?.addEventListener('click', () => embla.scrollPrev());
+    nextButton?.addEventListener('click', () => embla.scrollNext());
+    embla.on('select', updateControls);
+    embla.on('reInit', updateControls);
+
+    updateControls();
+  };
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initCarousel, { once: true });
+  } else {
+    initCarousel();
+  }
+</script>

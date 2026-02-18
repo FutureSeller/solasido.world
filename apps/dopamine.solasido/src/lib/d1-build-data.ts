@@ -13,6 +13,7 @@ type D1Result<T> = {
 type D1PostRow = {
   id: number
   instagram_id: string
+  instagram_permalink: string | null
   slug: string
   title: string
   meta_description: string
@@ -92,28 +93,30 @@ function mapAssetsByInstagramId(rows: D1AssetRow[]): Map<string, PostAsset[]> {
 export function fetchPublishedPostsFromD1(): BlogPostWithAssets[] {
   const posts = runD1Query<D1PostRow>(`
     SELECT
-      id,
-      instagram_id,
-      slug,
-      title,
-      meta_description,
-      body,
-      summary,
-      status,
-      created_at,
-      published_at,
-      canonical_url,
-      og_image_url
-    FROM blog_posts
-    WHERE status = 'published'
-      AND slug IS NOT NULL
-      AND title IS NOT NULL
-      AND meta_description IS NOT NULL
-      AND body IS NOT NULL
-      AND summary IS NOT NULL
-      AND published_at IS NOT NULL
-      AND canonical_url IS NOT NULL
-    ORDER BY published_at DESC
+      p.id,
+      p.instagram_id,
+      r.permalink AS instagram_permalink,
+      p.slug,
+      p.title,
+      p.meta_description,
+      p.body,
+      p.summary,
+      p.status,
+      p.created_at,
+      p.published_at,
+      p.canonical_url,
+      p.og_image_url
+    FROM blog_posts p
+    LEFT JOIN rawdata r ON r.instagram_id = p.instagram_id
+    WHERE p.status = 'published'
+      AND p.slug IS NOT NULL
+      AND p.title IS NOT NULL
+      AND p.meta_description IS NOT NULL
+      AND p.body IS NOT NULL
+      AND p.summary IS NOT NULL
+      AND p.published_at IS NOT NULL
+      AND p.canonical_url IS NOT NULL
+    ORDER BY p.published_at DESC
   `)
 
   const assets = runD1Query<D1AssetRow>(`
@@ -135,6 +138,7 @@ export function fetchPublishedPostsFromD1(): BlogPostWithAssets[] {
   return posts.map((row) => ({
     id: row.id,
     instagramId: row.instagram_id,
+    instagramPermalink: row.instagram_permalink,
     slug: row.slug,
     title: row.title,
     metaDescription: row.meta_description,

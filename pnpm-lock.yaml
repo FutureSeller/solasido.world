@@ -40,6 +40,9 @@ importers:
       astro:
         specifier: ^5.17.2
         version: 5.17.2(@types/node@22.19.11)(aws4fetch@1.0.20)(jiti@2.6.1)(lightningcss@1.30.2)(rollup@4.57.1)(terser@5.16.9)(tsx@4.21.0)(typescript@5.9.3)(yaml@2.8.2)
+      embla-carousel:
+        specifier: ^8.6.0
+        version: 8.6.0
       marked:
         specifier: ^17.0.3
         version: 17.0.3
@@ -1422,6 +1425,9 @@ packages:
 
   electron-to-chromium@1.5.286:
     resolution: {integrity: sha512-9tfDXhJ4RKFNerfjdCcZfufu49vg620741MNs26a9+bhLThdB+plgMeou98CAaHu/WATj2iHOOHTp1hWtABj2A==}
+
+  embla-carousel@8.6.0:
+    resolution: {integrity: sha512-SjWyZBHJPbqxHOzckOfo8lHisEaJWmwd23XppYFYVh10bU66/Pn5tkVkbkCMZVdbUE5eTCI2nD8OyIP4Z+uwkA==}
 
   emoji-regex@10.4.0:
     resolution: {integrity: sha512-EC+0oUMY1Rqm4O6LLrgjtYDvcVYTy7chDnM4Q7030tP4Kwj3u/pR6gP9ygnp2CJMK5Gq+9Q2oqmrFJAz01DXjw==}
@@ -3772,6 +3778,8 @@ snapshots:
   dset@3.1.4: {}
 
   electron-to-chromium@1.5.286: {}
+
+  embla-carousel@8.6.0: {}
 
   emoji-regex@10.4.0: {}
 
