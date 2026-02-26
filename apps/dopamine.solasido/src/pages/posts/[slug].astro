@@ -127,13 +127,25 @@ const instagramSourceUrl = post.instagramPermalink || post.canonicalUrl
             </div>
             {hasAssets && firstAsset && (
               <div class="flex-shrink-0 hidden sm:block">
-                <img
-                  src={firstAsset.r2Url}
-                  alt="Preview"
-                  width={firstAsset.width}
-                  height={firstAsset.height}
-                  class="w-20 h-20 object-cover rounded-lg"
-                />
+                {firstAsset.mediaType === 'video' ? (
+                  <video
+                    src={firstAsset.r2Url}
+                    class="w-20 h-20 object-cover rounded-lg"
+                    autoplay
+                    muted
+                    loop
+                    playsinline
+                    preload="none"
+                  />
+                ) : (
+                  <img
+                    src={firstAsset.r2Url}
+                    alt="Preview"
+                    width={firstAsset.width}
+                    height={firstAsset.height}
+                    class="w-20 h-20 object-cover rounded-lg"
+                  />
+                )}
               </div>
             )}
           </div>

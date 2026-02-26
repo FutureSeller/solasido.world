@@ -75,15 +75,27 @@ const hasPagination = Boolean(page.url.prev || page.url.next)
         data-post-card
       >
         <div class="aspect-square overflow-hidden bg-muted" data-post-media>
-          <img
-            src={post.assets[0]?.r2Url
-              ? resizeImageUrl(post.assets[0].r2Url, 800, 800)
-              : 'https://picsum.photos/800/800'}
-            alt={post.title}
-            width="800"
-            height="800"
-            class="block w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
-          />
+          {post.assets[0]?.mediaType === 'video' ? (
+            <video
+              src={post.assets[0].r2Url}
+              class="block w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+              autoplay
+              muted
+              loop
+              playsinline
+              preload="none"
+            />
+          ) : (
+            <img
+              src={post.assets[0]?.r2Url
+                ? resizeImageUrl(post.assets[0].r2Url, 800, 800)
+                : 'https://picsum.photos/800/800'}
+              alt={post.title}
+              width="800"
+              height="800"
+              class="block w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+            />
+          )}
         </div>
         <div class="p-4" data-post-content>
           <h2 class="text-2xl font-bold mb-2">{post.title}</h2>
