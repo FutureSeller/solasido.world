@@ -33,6 +33,7 @@ type D1AssetRow = {
   slide_index: number
   width: number | null
   height: number | null
+  media_type: string | null
 }
 
 function runD1Query<T>(sql: string): T[] {
@@ -84,6 +85,7 @@ function mapAssetsByInstagramId(rows: D1AssetRow[]): Map<string, PostAsset[]> {
       slideIndex: row.slide_index,
       width: row.width ?? 1200,
       height: row.height ?? 630,
+      mediaType: row.media_type === 'VIDEO' ? 'video' : 'image',
     })
     assetMap.set(row.instagram_media_id, current)
   }
@@ -126,7 +128,8 @@ export function fetchPublishedPostsFromD1(): BlogPostWithAssets[] {
       a.r2_url,
       a.slide_index,
       a.width,
-      a.height
+      a.height,
+      a.media_type
     FROM assets a
     JOIN blog_posts p ON p.instagram_id = a.instagram_media_id
     WHERE p.status = 'published'

@@ -157,16 +157,31 @@ const instagramSourceUrl = post.instagramPermalink || post.canonicalUrl
                 data-carousel-slide
               >
                 <div
-                  class="mx-auto w-[min(92vw,700px)] overflow-hidden rounded-lg"
+                  class="mx-auto w-[min(92vw,700px)] overflow-hidden rounded-lg bg-muted"
+                  style={`aspect-ratio: ${asset.width} / ${asset.height}`}
                 >
-                  <img
-                    src={asset.r2Url}
-                    alt={`Image ${index + 1}`}
-                    width={asset.width}
-                    height={asset.height}
-                    class="block w-full h-auto bg-muted"
-                    loading={index === 0 ? 'eager' : 'lazy'}
-                  />
+                  {asset.mediaType === 'video' ? (
+                    <video
+                      src={asset.r2Url}
+                      width={asset.width}
+                      height={asset.height}
+                      class="block w-full h-auto"
+                      autoplay
+                      muted
+                      loop
+                      playsinline
+                      preload={index === 0 ? 'auto' : 'none'}
+                    />
+                  ) : (
+                    <img
+                      src={asset.r2Url}
+                      alt={`Image ${index + 1}`}
+                      width={asset.width}
+                      height={asset.height}
+                      class="block w-full h-auto"
+                      loading={index === 0 ? 'eager' : 'lazy'}
+                    />
+                  )}
                 </div>
               </div>
             ))}

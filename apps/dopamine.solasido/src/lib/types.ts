@@ -19,6 +19,7 @@ export interface Asset {
   width: number | null
   height: number | null
   size_bytes: number | null
+  media_type: string | null
 }
 
 export interface BlogPost {
@@ -43,6 +44,7 @@ export interface PostAsset {
   slideIndex: number
   width: number
   height: number
+  mediaType: 'image' | 'video'
 }
 
 export interface BlogPostModel {
