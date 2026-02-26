@@ -79,13 +79,14 @@ function mapAssetsByInstagramId(rows: D1AssetRow[]): Map<string, PostAsset[]> {
   const assetMap = new Map<string, PostAsset[]>()
   for (const row of rows) {
     const current = assetMap.get(row.instagram_media_id) ?? []
+    const normalizedMediaType = row.media_type?.trim().toUpperCase() ?? ''
     current.push({
       id: row.id,
       r2Url: row.r2_url,
       slideIndex: row.slide_index,
       width: row.width ?? 1200,
       height: row.height ?? 630,
-      mediaType: row.media_type === 'VIDEO' ? 'video' : 'image',
+      mediaType: normalizedMediaType === 'VIDEO' ? 'video' : 'image',
     })
     assetMap.set(row.instagram_media_id, current)
   }
