@@ -52,6 +52,7 @@ const gscVerification = import.meta.env.PUBLIC_GSC_VERIFICATION
   <head>
     <meta charset="UTF-8" />
     <meta name="description" content={description || SITE_DESCRIPTION} />
+    <link rel="canonical" href={ogUrl || Astro.url.href} />
     {gscVerification && <meta name="google-site-verification" content={gscVerification} />}
     {ogTitle && <meta property="og:title" content={ogTitle} />}
     {ogDescription && <meta property="og:description" content={ogDescription} />}
