@@ -6,6 +6,7 @@ interface UseRecipesReturn {
   loading: boolean;
   error: string | null;
   totalPages: number;
+  totalCount: number;
   refetch: () => void;
 }
 
@@ -14,6 +15,7 @@ export function useRecipes(query: string, page: number, limit: number): UseRecip
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [totalPages, setTotalPages] = useState(1);
+  const [totalCount, setTotalCount] = useState(0);
 
   const fetchRecipes = useCallback(async () => {
     setLoading(true);
@@ -38,10 +40,12 @@ export function useRecipes(query: string, page: number, limit: number): UseRecip
       const data: RecipesListResponse = await response.json();
       setRecipes(data.recipes);
       setTotalPages(data.pagination.totalPages);
+      setTotalCount(data.pagination.totalCount);
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Unknown error');
       setRecipes([]);
       setTotalPages(1);
+      setTotalCount(0);
     } finally {
       setLoading(false);
     }
@@ -56,6 +60,7 @@ export function useRecipes(query: string, page: number, limit: number): UseRecip
     loading,
     error,
     totalPages,
+    totalCount,
     refetch: fetchRecipes,
   };
 }

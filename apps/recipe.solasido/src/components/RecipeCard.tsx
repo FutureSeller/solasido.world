@@ -8,32 +8,64 @@ interface RecipeCardProps {
 }
 
 export function RecipeCard({ recipe, onOpen }: RecipeCardProps) {
+  const previewIngredients = recipe.ingredients.slice(0, 3);
+
   return (
     <button
-      className="group bg-white rounded-2xl shadow-[0_4px_15px_rgba(0,0,0,0.08)] overflow-hidden transition-all duration-300 ease-[cubic-bezier(0.4,0,0.2,1)] cursor-pointer relative flex flex-col border-none text-left hover:shadow-[0_12px_40px_rgba(0,0,0,0.15)] hover:-translate-y-2"
+      className="surface-card group relative flex flex-col overflow-hidden rounded-[28px] border-none text-left transition-all duration-300 ease-[cubic-bezier(0.4,0,0.2,1)] hover:-translate-y-1 hover:shadow-[0_28px_56px_rgba(56,32,16,0.12)]"
       onClick={() => onOpen(recipe)}
     >
-      {/* Orange gradient top border on hover */}
-      <div className="absolute top-0 left-0 right-0 h-1 orange-gradient scale-x-0 group-hover:scale-x-100 transition-transform duration-300" />
+      <div className="pointer-events-none absolute inset-x-0 top-0 h-px bg-[linear-gradient(90deg,rgba(201,111,59,0),rgba(201,111,59,0.75),rgba(120,146,94,0.45),rgba(201,111,59,0))] opacity-0 transition-opacity duration-300 group-hover:opacity-100" />
 
-      <div className="w-full h-60 overflow-hidden bg-gray-100">
+      <div className="relative h-60 w-full overflow-hidden bg-[#e9dfd2]">
         <img
           src={resolveImage(recipe)}
           alt={`${recipe.name} 썸네일`}
-          className="w-full h-full object-cover transition-transform duration-400 group-hover:scale-105"
+          className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-[1.03]"
           onError={(e) => {
             e.currentTarget.src = PLACEHOLDER;
           }}
         />
+        <div className="absolute inset-x-0 bottom-0 h-24 bg-gradient-to-t from-[#24170d]/55 to-transparent" />
+        <div className="absolute left-4 top-4 rounded-full bg-white/88 px-3 py-1 text-xs font-semibold tracking-[0.16em] text-[var(--accent-strong)]">
+          RECIPE
+        </div>
       </div>
 
-      <div className="p-4 flex flex-col flex-grow">
-        <h2 className="text-[1.22em] m-0 mb-2 text-[#2c3e50] font-bold leading-[1.35]">
-          {recipe.name}
-        </h2>
-        <p className="m-0 text-[0.92em] text-[#5a6c7d]">
-          <strong className="text-orange-main font-semibold">⏱️ 조리 시간</strong> {recipe.cookTime}
+      <div className="flex flex-1 flex-col p-5">
+        <div className="mb-4 flex items-start justify-between gap-4">
+          <div>
+            <p className="section-label mb-2">Dish Name</p>
+            <h2 className="text-strong m-0 text-[1.3rem] font-semibold leading-[1.32] tracking-[-0.03em]">
+              {recipe.name}
+            </h2>
+          </div>
+          <div className="accent-wash shrink-0 rounded-[18px] px-3 py-2 text-right">
+            <p className="section-label mb-1">Cook Time</p>
+            <p className="text-accent text-sm font-semibold">{recipe.cookTime}</p>
+          </div>
+        </div>
+
+        <p className="text-base mb-4 text-sm leading-6">
+          {previewIngredients.length > 0
+            ? `${previewIngredients.join(' · ')}${recipe.ingredients.length > 3 ? ' 외 재료' : ''}`
+            : '재료 정보는 상세 화면에서 확인할 수 있습니다.'}
         </p>
+
+        <div className="mb-4 flex flex-wrap gap-2">
+          {previewIngredients.map((ingredient, index) => (
+            <span key={`${recipe.id}-${ingredient}-${index}`} className="ingredient-chip rounded-full px-3 py-1.5 text-xs">
+              {ingredient}
+            </span>
+          ))}
+        </div>
+
+        <div className="mt-auto flex items-center justify-between border-t border-[var(--line)] pt-4">
+          <p className="text-soft text-sm">자세한 재료와 순서를 열어보기</p>
+          <span className="text-accent text-sm font-semibold transition-transform duration-200 group-hover:translate-x-1">
+            보기 →
+          </span>
+        </div>
       </div>
     </button>
   );
