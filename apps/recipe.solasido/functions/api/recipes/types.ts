@@ -35,6 +35,7 @@ export interface DBRecipeIngredientRow {
 export interface Recipe {
   id: string;
   name: string;
+  tags: string[];
   ingredients: string[];
   cookTime: string;
   recipeText: string;
@@ -65,11 +66,13 @@ export function transformRecipe(
   dbRecipe: DBRecipeRow,
   relations?: Partial<HydratedRecipeRelations>,
 ): Recipe {
+  const tags = (relations?.tags || []).map((tag) => tag.display_text);
   const ingredients = (relations?.ingredients || []).map(formatIngredientLabel);
 
   return {
     id: dbRecipe.id,
     name: dbRecipe.name,
+    tags,
     ingredients,
     cookTime: dbRecipe.cook_time || '',
     recipeText: dbRecipe.recipe_text || '',
@@ -104,16 +107,34 @@ export async function getRecipesByIds(d1: D1Database, ids: string[]): Promise<Re
     .bind(...ids)
     .all<DBRecipeIngredientRow>();
 
+  const tagRowsResult = await d1
+    .prepare(
+      `SELECT id, recipe_id, tag, display_text, sort_order, created_at
+       FROM recipe_tags
+       WHERE recipe_id IN (${placeholders})
+       ORDER BY sort_order ASC, created_at ASC, id ASC`,
+    )
+    .bind(...ids)
+    .all<DBRecipeTagRow>();
+
   const recipeRows = recipeRowsResult.results || [];
   const ingredientRows = ingredientRowsResult.results || [];
+  const tagRows = tagRowsResult.results || [];
 
   const recipeMap = new Map(recipeRows.map((row) => [row.id, row]));
   const ingredientsByRecipeId = new Map<string, DBRecipeIngredientRow[]>();
+  const tagsByRecipeId = new Map<string, DBRecipeTagRow[]>();
 
   for (const ingredient of ingredientRows) {
     const bucket = ingredientsByRecipeId.get(ingredient.recipe_id) || [];
     bucket.push(ingredient);
     ingredientsByRecipeId.set(ingredient.recipe_id, bucket);
+  }
+
+  for (const tag of tagRows) {
+    const bucket = tagsByRecipeId.get(tag.recipe_id) || [];
+    bucket.push(tag);
+    tagsByRecipeId.set(tag.recipe_id, bucket);
   }
 
   return ids
@@ -124,6 +145,7 @@ export async function getRecipesByIds(d1: D1Database, ids: string[]): Promise<Re
       }
 
       return transformRecipe(recipe, {
+        tags: tagsByRecipeId.get(id) || [],
         ingredients: ingredientsByRecipeId.get(id) || [],
       });
     })

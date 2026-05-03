@@ -9,6 +9,7 @@ interface RecipeCardProps {
 
 export function RecipeCard({ recipe, onOpen }: RecipeCardProps) {
   const previewIngredients = recipe.ingredients.slice(0, 3);
+  const previewTags = recipe.tags.slice(0, 4);
 
   return (
     <button
@@ -52,13 +53,18 @@ export function RecipeCard({ recipe, onOpen }: RecipeCardProps) {
             : '재료 정보는 상세 화면에서 확인할 수 있습니다.'}
         </p>
 
-        <div className="mb-4 flex flex-wrap gap-2">
-          {previewIngredients.map((ingredient, index) => (
-            <span key={`${recipe.id}-${ingredient}-${index}`} className="ingredient-chip rounded-full px-3 py-1.5 text-xs">
-              {ingredient}
-            </span>
-          ))}
-        </div>
+        {previewTags.length > 0 && (
+          <div className="mb-4 flex flex-wrap gap-2">
+            {previewTags.map((tag, index) => (
+              <span
+                key={`${recipe.id}-${tag}-${index}`}
+                className="ingredient-chip rounded-full px-3 py-1.5 text-xs"
+              >
+                {tag}
+              </span>
+            ))}
+          </div>
+        )}
 
         <div className="mt-auto flex items-center justify-between border-t border-[var(--line)] pt-4">
           <p className="text-soft text-sm">자세한 재료와 순서를 열어보기</p>

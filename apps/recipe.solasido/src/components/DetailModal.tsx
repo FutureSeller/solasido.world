@@ -47,9 +47,6 @@ export function DetailModal({ recipe, onClose }: DetailModalProps) {
               <h2 className="text-strong m-0 text-[2rem] font-semibold leading-[1.15] tracking-[-0.04em] sm:text-[2.4rem]">
                 {recipe.name}
               </h2>
-              <p className="text-base mt-4 text-sm leading-6 sm:text-base">
-                재료와 조리 흐름을 한 화면 안에서 차분하게 읽을 수 있도록 정리했습니다.
-              </p>
 
               <div className="mt-5 grid gap-3 sm:grid-cols-2">
                 <div className="accent-wash rounded-[22px] px-4 py-3">
