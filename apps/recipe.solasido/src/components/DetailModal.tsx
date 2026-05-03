@@ -71,7 +71,7 @@ export function DetailModal({ recipe, onClose }: DetailModalProps) {
                     rel="noreferrer"
                     className="text-accent inline-flex items-center gap-2 text-sm font-medium underline decoration-[rgba(159,79,38,0.28)] underline-offset-4 transition-colors duration-200 hover:text-[var(--text-strong)]"
                   >
-                    원본 링크 열기
+                    링크 열기
                     <span aria-hidden="true">↗</span>
                   </a>
                 </div>
