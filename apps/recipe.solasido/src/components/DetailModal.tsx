@@ -41,7 +41,7 @@ export function DetailModal({ recipe, onClose }: DetailModalProps) {
             />
           </div>
 
-          <div className="flex min-h-0 min-w-0 flex-col overflow-hidden">
+          <div className="flex min-h-0 min-w-0 flex-col overflow-y-auto overscroll-contain pr-1">
             <div className="border-b border-[var(--line)] pb-5">
               <h2 className="text-strong m-0 text-[2rem] font-semibold leading-[1.15] tracking-[-0.04em] sm:text-[2.4rem]">
                 {recipe.name}
@@ -74,28 +74,26 @@ export function DetailModal({ recipe, onClose }: DetailModalProps) {
               )}
             </div>
 
-            <div className="min-h-0 flex-1 overflow-y-auto overscroll-contain pr-1">
-              <section className="border-b border-[var(--line)] py-5">
-                <p className="section-label mb-3">Ingredients</p>
-                <ul className="flex list-none flex-wrap gap-2 p-0">
-                  {(recipe.ingredients || []).map((ingredient, index) => (
-                    <li
-                      key={`${recipe.id}-${ingredient}-${index}`}
-                      className="ingredient-chip rounded-full px-3 py-1.5 text-sm"
-                    >
-                      {ingredient}
-                    </li>
-                  ))}
-                </ul>
-              </section>
+            <section className="border-b border-[var(--line)] py-5">
+              <p className="section-label mb-3">Ingredients</p>
+              <ul className="flex list-none flex-wrap gap-2 p-0">
+                {(recipe.ingredients || []).map((ingredient, index) => (
+                  <li
+                    key={`${recipe.id}-${ingredient}-${index}`}
+                    className="ingredient-chip rounded-full px-3 py-1.5 text-sm"
+                  >
+                    {ingredient}
+                  </li>
+                ))}
+              </ul>
+            </section>
 
-              <section className="py-5">
-                <p className="section-label mb-3">Method</p>
-                <pre className="text-base m-0 whitespace-pre-wrap rounded-[24px] bg-[#f8f3eb] p-4 font-sans text-sm leading-7 sm:p-5 sm:text-[15px]">
-                  {recipe.recipeText || '상세 내용은 배포 데이터 동기화 후 표시됩니다.'}
-                </pre>
-              </section>
-            </div>
+            <section className="py-5">
+              <p className="section-label mb-3">Method</p>
+              <pre className="text-base m-0 whitespace-pre-wrap rounded-[24px] bg-[#f8f3eb] p-4 font-sans text-sm leading-7 sm:p-5 sm:text-[15px]">
+                {recipe.recipeText || '상세 내용은 배포 데이터 동기화 후 표시됩니다.'}
+              </pre>
+            </section>
           </div>
         </div>
       </div>
