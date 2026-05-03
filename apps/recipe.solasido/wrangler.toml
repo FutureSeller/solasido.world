@@ -4,8 +4,8 @@ pages_build_output_dir = "dist"
 
 [[d1_databases]]
 binding = "DB"
-database_name = "recipe_db"
-database_id = "9fcfed36-33af-46f8-899f-d0277441acc0"
+database_name = "dopamine_db"
+database_id = "5769fa3c-4809-423b-ade5-0a5607ad0b0f"
 
 [[r2_buckets]]
 binding = "IMAGES"

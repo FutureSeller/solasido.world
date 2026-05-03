@@ -15,7 +15,7 @@ function getArg(name) {
 function runD1Sql(sql, { local = false } = {}) {
   const mode = local ? '--local' : '--remote';
   const escaped = sql.replaceAll('"', '\\"');
-  const cmd = `npx wrangler d1 execute recipe_db ${mode} --command="${escaped}" --json`;
+  const cmd = `npx wrangler d1 execute dopamine_db ${mode} --command="${escaped}" --json`;
   const out = execSync(cmd, { encoding: 'utf8' });
   return JSON.parse(out);
 }
