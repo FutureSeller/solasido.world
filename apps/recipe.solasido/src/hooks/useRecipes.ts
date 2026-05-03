@@ -1,66 +1,57 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useSuspenseInfiniteQuery } from '@tanstack/react-query';
 import type { Recipe, RecipesListResponse } from '../types/recipe';
 
 interface UseRecipesReturn {
   recipes: Recipe[];
-  loading: boolean;
-  error: string | null;
-  totalPages: number;
+  loadingMore: boolean;
   totalCount: number;
+  hasNextPage: boolean;
+  loadMore: () => void;
   refetch: () => void;
 }
 
-export function useRecipes(query: string, page: number, limit: number): UseRecipesReturn {
-  const [recipes, setRecipes] = useState<Recipe[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-  const [totalPages, setTotalPages] = useState(1);
-  const [totalCount, setTotalCount] = useState(0);
-
-  const fetchRecipes = useCallback(async () => {
-    setLoading(true);
-    setError(null);
-
-    try {
+export function useRecipes(query: string, limit: number): UseRecipesReturn {
+  const normalizedQuery = query.trim();
+  const result = useSuspenseInfiniteQuery({
+    queryKey: ['recipes', normalizedQuery, limit],
+    initialPageParam: 1,
+    queryFn: async ({ pageParam, signal }) => {
       const params = new URLSearchParams({
-        page: String(page),
+        page: String(pageParam),
         limit: String(limit),
       });
 
-      if (query.trim()) {
-        params.set('q', query.trim());
+      if (normalizedQuery) {
+        params.set('q', normalizedQuery);
       }
 
-      const response = await fetch(`/api/recipes?${params.toString()}`);
+      const response = await fetch(`/api/recipes?${params.toString()}`, { signal });
 
       if (!response.ok) {
         throw new Error('Failed to fetch recipes');
       }
 
-      const data: RecipesListResponse = await response.json();
-      setRecipes(data.recipes);
-      setTotalPages(data.pagination.totalPages);
-      setTotalCount(data.pagination.totalCount);
-    } catch (err) {
-      setError(err instanceof Error ? err.message : 'Unknown error');
-      setRecipes([]);
-      setTotalPages(1);
-      setTotalCount(0);
-    } finally {
-      setLoading(false);
-    }
-  }, [query, page, limit]);
+      return response.json() as Promise<RecipesListResponse>;
+    },
+    getNextPageParam: (lastPage) => {
+      const { page, totalPages } = lastPage.pagination;
+      return page < totalPages ? page + 1 : undefined;
+    },
+  });
 
-  useEffect(() => {
-    fetchRecipes();
-  }, [fetchRecipes]);
+  const recipes = result.data.pages.flatMap((page) => page.recipes);
+  const totalCount = result.data.pages[0]?.pagination.totalCount ?? 0;
 
   return {
     recipes,
-    loading,
-    error,
-    totalPages,
+    loadingMore: result.isFetchingNextPage,
     totalCount,
-    refetch: fetchRecipes,
+    hasNextPage: !!result.hasNextPage,
+    loadMore: () => {
+      void result.fetchNextPage();
+    },
+    refetch: () => {
+      void result.refetch();
+    },
   };
 }
