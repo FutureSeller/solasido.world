@@ -1,4 +1,5 @@
-import { useDeferredValue, useState } from 'react';
+import { debounce } from 'es-toolkit';
+import { useMemo, useState } from 'react';
 import { RecipeCard } from './components/RecipeCard';
 import { DetailModal } from './components/DetailModal';
 import { SearchBar } from './components/SearchBar';
@@ -8,17 +9,24 @@ import { LoadingState } from './components/LoadingState';
 import { useRecipes } from './hooks/useRecipes';
 import { useKeyboardShortcut } from './hooks/useKeyboardShortcut';
 import { useBodyScrollLock } from './hooks/useBodyScrollLock';
-import { RECIPES_PER_PAGE } from './lib/constants';
+import { RECIPES_PER_PAGE, SEARCH_DEBOUNCE_MS } from './lib/constants';
 import type { Recipe } from './types/recipe';
 
 export default function App() {
   const [query, setQuery] = useState('');
   const [selectedRecipe, setSelectedRecipe] = useState<Recipe | null>(null);
   const [currentPage, setCurrentPage] = useState(1);
-  const deferredQuery = useDeferredValue(query);
+  const [debouncedQuery, setDebouncedQuery] = useState('');
+  const updateDebouncedQuery = useMemo(
+    () =>
+      debounce((value: string) => {
+        setDebouncedQuery(value);
+      }, SEARCH_DEBOUNCE_MS),
+    [],
+  );
 
   const { recipes, loading, error, totalPages, totalCount } = useRecipes(
-    deferredQuery,
+    debouncedQuery,
     currentPage,
     RECIPES_PER_PAGE,
   );
@@ -28,6 +36,7 @@ export default function App() {
 
   const handleQueryChange = (value: string) => {
     setQuery(value);
+    updateDebouncedQuery(value);
     setCurrentPage(1);
   };
 
