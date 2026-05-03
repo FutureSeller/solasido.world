@@ -10,6 +10,8 @@ interface DetailModalProps {
 export function DetailModal({ recipe, onClose }: DetailModalProps) {
   if (!recipe) return null;
 
+  const hasSourceUrl = recipe.sourceUrl.trim().length > 0;
+
   return (
     <div
       className="fixed inset-0 z-[9999] flex items-end justify-center bg-[rgba(31,20,11,0.42)] p-0 sm:items-center sm:p-5"
@@ -59,6 +61,21 @@ export function DetailModal({ recipe, onClose }: DetailModalProps) {
                   <p className="text-strong text-lg font-semibold">{recipe.ingredients.length} items</p>
                 </div>
               </div>
+
+              {hasSourceUrl && (
+                <div className="mt-4 rounded-[22px] border border-[var(--line)] bg-white/72 px-4 py-3">
+                  <p className="section-label mb-2">Source</p>
+                  <a
+                    href={recipe.sourceUrl}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="text-accent inline-flex items-center gap-2 text-sm font-medium underline decoration-[rgba(159,79,38,0.28)] underline-offset-4 transition-colors duration-200 hover:text-[var(--text-strong)]"
+                  >
+                    원본 링크 열기
+                    <span aria-hidden="true">↗</span>
+                  </a>
+                </div>
+              )}
             </div>
 
             <section className="border-b border-[var(--line)] py-5">

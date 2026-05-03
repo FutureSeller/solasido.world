@@ -4,6 +4,7 @@ export interface Recipe {
   ingredients: string[];
   cookTime: string;
   recipeText: string;
+  sourceUrl: string;
   thumbnailUrl: string;
 }
 

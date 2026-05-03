@@ -38,6 +38,7 @@ export interface Recipe {
   ingredients: string[];
   cookTime: string;
   recipeText: string;
+  sourceUrl: string;
   thumbnailUrl: string;
 }
 
@@ -72,6 +73,7 @@ export function transformRecipe(
     ingredients,
     cookTime: dbRecipe.cook_time || '',
     recipeText: dbRecipe.recipe_text || '',
+    sourceUrl: dbRecipe.source_url || '',
     thumbnailUrl: dbRecipe.thumbnail_url || '',
   };
 }
