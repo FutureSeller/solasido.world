@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useDeferredValue, useState } from 'react';
 import { RecipeCard } from './components/RecipeCard';
 import { DetailModal } from './components/DetailModal';
 import { SearchBar } from './components/SearchBar';
@@ -15,9 +15,10 @@ export default function App() {
   const [query, setQuery] = useState('');
   const [selectedRecipe, setSelectedRecipe] = useState<Recipe | null>(null);
   const [currentPage, setCurrentPage] = useState(1);
+  const deferredQuery = useDeferredValue(query);
 
   const { recipes, loading, error, totalPages, totalCount } = useRecipes(
-    query,
+    deferredQuery,
     currentPage,
     RECIPES_PER_PAGE,
   );
