@@ -18,7 +18,7 @@ export function DetailModal({ recipe, onClose }: DetailModalProps) {
       onClick={onClose}
     >
       <div
-        className="surface-card-strong w-full max-h-[92vh] overflow-auto rounded-t-[28px] px-4 pb-6 pt-4 animate-[panelIn_0.28s_ease-out] sm:max-w-[980px] sm:rounded-[30px] sm:px-6 sm:pb-7 sm:pt-5"
+        className="surface-card-strong relative flex h-[92vh] w-full overflow-hidden rounded-t-[28px] px-4 pb-4 pt-4 animate-[panelIn_0.28s_ease-out] sm:max-w-[980px] sm:rounded-[30px] sm:px-6 sm:pb-6 sm:pt-5 lg:h-[780px]"
         onClick={(e) => e.stopPropagation()}
       >
         <button
@@ -29,10 +29,10 @@ export function DetailModal({ recipe, onClose }: DetailModalProps) {
           ✕
         </button>
 
-        <div className="grid gap-5 sm:gap-6 lg:grid-cols-[minmax(0,1.08fr)_minmax(320px,0.92fr)]">
-          <div className="overflow-hidden rounded-[24px] bg-[#eadfce]">
+        <div className="grid h-full min-h-0 gap-5 sm:gap-6 lg:grid-cols-[minmax(0,1.08fr)_minmax(320px,0.92fr)]">
+          <div className="h-[280px] overflow-hidden rounded-[24px] bg-[#eadfce] sm:h-[340px] lg:h-full">
             <img
-              className="max-h-[360px] w-full object-cover sm:max-h-[560px] lg:h-full lg:max-h-none"
+              className="h-full w-full object-cover"
               src={resolveImage(recipe)}
               alt={recipe.name}
               onError={(e) => {
@@ -41,7 +41,7 @@ export function DetailModal({ recipe, onClose }: DetailModalProps) {
             />
           </div>
 
-          <div className="flex min-w-0 flex-col">
+          <div className="flex min-h-0 min-w-0 flex-col overflow-hidden">
             <div className="border-b border-[var(--line)] pb-5">
               <h2 className="text-strong m-0 text-[2rem] font-semibold leading-[1.15] tracking-[-0.04em] sm:text-[2.4rem]">
                 {recipe.name}
@@ -74,26 +74,28 @@ export function DetailModal({ recipe, onClose }: DetailModalProps) {
               )}
             </div>
 
-            <section className="border-b border-[var(--line)] py-5">
-              <p className="section-label mb-3">Ingredients</p>
-              <ul className="flex list-none flex-wrap gap-2 p-0">
-                {(recipe.ingredients || []).map((ingredient, index) => (
-                  <li
-                    key={`${recipe.id}-${ingredient}-${index}`}
-                    className="ingredient-chip rounded-full px-3 py-1.5 text-sm"
-                  >
-                    {ingredient}
-                  </li>
-                ))}
-              </ul>
-            </section>
+            <div className="min-h-0 flex-1 overflow-y-auto overscroll-contain pr-1">
+              <section className="border-b border-[var(--line)] py-5">
+                <p className="section-label mb-3">Ingredients</p>
+                <ul className="flex list-none flex-wrap gap-2 p-0">
+                  {(recipe.ingredients || []).map((ingredient, index) => (
+                    <li
+                      key={`${recipe.id}-${ingredient}-${index}`}
+                      className="ingredient-chip rounded-full px-3 py-1.5 text-sm"
+                    >
+                      {ingredient}
+                    </li>
+                  ))}
+                </ul>
+              </section>
 
-            <section className="pt-5">
-              <p className="section-label mb-3">Method</p>
-              <pre className="text-base m-0 whitespace-pre-wrap rounded-[24px] bg-[#f8f3eb] p-4 font-sans text-sm leading-7 sm:p-5 sm:text-[15px]">
-                {recipe.recipeText || '상세 내용은 배포 데이터 동기화 후 표시됩니다.'}
-              </pre>
-            </section>
+              <section className="py-5">
+                <p className="section-label mb-3">Method</p>
+                <pre className="text-base m-0 whitespace-pre-wrap rounded-[24px] bg-[#f8f3eb] p-4 font-sans text-sm leading-7 sm:p-5 sm:text-[15px]">
+                  {recipe.recipeText || '상세 내용은 배포 데이터 동기화 후 표시됩니다.'}
+                </pre>
+              </section>
+            </div>
           </div>
         </div>
       </div>
