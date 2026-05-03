@@ -1,8 +1,6 @@
 interface SearchBarProps {
   query: string;
   isSearching: boolean;
-  totalCount: number;
-  currentCount: number;
   onChange: (value: string) => void;
   onClear: () => void;
 }
@@ -10,8 +8,6 @@ interface SearchBarProps {
 export function SearchBar({
   query,
   isSearching,
-  totalCount,
-  currentCount,
   onChange,
   onClear,
 }: SearchBarProps) {
@@ -46,8 +42,8 @@ export function SearchBar({
         <div className="mt-3 flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
           <p className="text-soft text-sm leading-6">
             {isSearching
-              ? `"${query}" 기준으로 ${totalCount}개를 찾았고, 현재 ${currentCount}개를 표시 중입니다.`
-              : `${totalCount}개의 레시피를 한 번에 훑지 않고, 필요한 것부터 바로 찾을 수 있습니다.`}
+              ? `"${query}" 기준으로 레시피를 다시 찾고 있습니다.`
+              : '레시피 이름이나 재료로 바로 원하는 항목을 좁혀서 볼 수 있습니다.'}
           </p>
           <div className="flex flex-wrap gap-2 text-xs">
             <span className="ingredient-chip rounded-full px-3 py-1.5">예: 두부</span>
