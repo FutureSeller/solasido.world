@@ -17,62 +17,38 @@ export function Pagination({
 }: PaginationProps) {
   if (totalPages <= 1) return null;
 
+  const buttonClass =
+    'rounded-full border border-[var(--line)] bg-white/82 px-4 py-2.5 text-sm font-medium text-[var(--text-base)] transition-all duration-200 hover:enabled:-translate-y-px hover:enabled:border-[var(--line-strong)] hover:enabled:text-[var(--text-strong)] disabled:cursor-not-allowed disabled:opacity-35';
+
   return (
-    <div className="flex justify-center items-center gap-3 my-[50px] mb-[30px] flex-wrap">
+    <div className="mt-10 flex flex-wrap items-center justify-center gap-2.5 pb-4 sm:mt-12">
       <button
         onClick={onFirst}
         disabled={currentPage === 1}
-        className="bg-white border-2 border-[#e0e0e0] px-4 py-2.5 rounded-lg cursor-pointer transition-all duration-300 text-[0.95em] font-medium text-[#5a6c7d] min-w-[44px] hover:enabled:text-white hover:enabled:border-transparent hover:enabled:-translate-y-0.5 hover:enabled:shadow-[0_4px_12px_rgba(255,85,34,0.3)] disabled:opacity-40 disabled:cursor-not-allowed"
-        onMouseEnter={(e) => {
-          if (!e.currentTarget.disabled) {
-            e.currentTarget.style.background = 'linear-gradient(135deg, #ff9944 0%, #ff5522 100%)';
-          }
-        }}
-        onMouseLeave={(e) => {
-          if (!e.currentTarget.disabled) {
-            e.currentTarget.style.background = 'white';
-          }
-        }}
+        className={buttonClass}
       >
-        첫 페이지
+        처음
       </button>
 
       <button
         onClick={onPrev}
         disabled={currentPage === 1}
-        className="bg-white border-2 border-[#e0e0e0] px-4 py-2.5 rounded-lg cursor-pointer transition-all duration-300 text-[0.95em] font-medium text-[#5a6c7d] min-w-[44px] hover:enabled:text-white hover:enabled:border-transparent hover:enabled:-translate-y-0.5 hover:enabled:shadow-[0_4px_12px_rgba(255,85,34,0.3)] disabled:opacity-40 disabled:cursor-not-allowed"
-        onMouseEnter={(e) => {
-          if (!e.currentTarget.disabled) {
-            e.currentTarget.style.background = 'linear-gradient(135deg, #ff9944 0%, #ff5522 100%)';
-          }
-        }}
-        onMouseLeave={(e) => {
-          if (!e.currentTarget.disabled) {
-            e.currentTarget.style.background = 'white';
-          }
-        }}
+        className={buttonClass}
       >
         이전
       </button>
 
-      <span className="text-[#5a6c7d] text-[0.95em] px-3 font-medium">
-        페이지 {currentPage} / {totalPages}
-      </span>
+      <div className="surface-card rounded-full px-4 py-2">
+        <span className="text-soft text-xs font-semibold uppercase tracking-[0.18em]">Page</span>
+        <span className="text-strong ml-2 text-sm font-semibold">
+          {currentPage} / {totalPages}
+        </span>
+      </div>
 
       <button
         onClick={onNext}
         disabled={currentPage === totalPages}
-        className="bg-white border-2 border-[#e0e0e0] px-4 py-2.5 rounded-lg cursor-pointer transition-all duration-300 text-[0.95em] font-medium text-[#5a6c7d] min-w-[44px] hover:enabled:text-white hover:enabled:border-transparent hover:enabled:-translate-y-0.5 hover:enabled:shadow-[0_4px_12px_rgba(255,85,34,0.3)] disabled:opacity-40 disabled:cursor-not-allowed"
-        onMouseEnter={(e) => {
-          if (!e.currentTarget.disabled) {
-            e.currentTarget.style.background = 'linear-gradient(135deg, #ff9944 0%, #ff5522 100%)';
-          }
-        }}
-        onMouseLeave={(e) => {
-          if (!e.currentTarget.disabled) {
-            e.currentTarget.style.background = 'white';
-          }
-        }}
+        className={buttonClass}
       >
         다음
       </button>
@@ -80,19 +56,9 @@ export function Pagination({
       <button
         onClick={onLast}
         disabled={currentPage === totalPages}
-        className="bg-white border-2 border-[#e0e0e0] px-4 py-2.5 rounded-lg cursor-pointer transition-all duration-300 text-[0.95em] font-medium text-[#5a6c7d] min-w-[44px] hover:enabled:text-white hover:enabled:border-transparent hover:enabled:-translate-y-0.5 hover:enabled:shadow-[0_4px_12px_rgba(255,85,34,0.3)] disabled:opacity-40 disabled:cursor-not-allowed"
-        onMouseEnter={(e) => {
-          if (!e.currentTarget.disabled) {
-            e.currentTarget.style.background = 'linear-gradient(135deg, #ff9944 0%, #ff5522 100%)';
-          }
-        }}
-        onMouseLeave={(e) => {
-          if (!e.currentTarget.disabled) {
-            e.currentTarget.style.background = 'white';
-          }
-        }}
+        className={buttonClass}
       >
-        마지막 페이지
+        끝
       </button>
     </div>
   );

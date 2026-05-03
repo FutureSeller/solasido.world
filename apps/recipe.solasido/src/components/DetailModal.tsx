@@ -12,66 +12,77 @@ export function DetailModal({ recipe, onClose }: DetailModalProps) {
 
   return (
     <div
-      className="fixed inset-0 bg-black/45 flex justify-center items-center z-[9999] p-5"
+      className="fixed inset-0 z-[9999] flex items-end justify-center bg-[rgba(31,20,11,0.42)] p-0 sm:items-center sm:p-5"
       onClick={onClose}
     >
       <div
-        className="w-full max-w-[760px] max-h-[86vh] overflow-auto bg-white rounded-2xl p-4 px-6 pb-[22px] relative shadow-[0_20px_50px_rgba(0,0,0,0.25)]"
+        className="surface-card-strong w-full max-h-[92vh] overflow-auto rounded-t-[28px] px-4 pb-6 pt-4 animate-[panelIn_0.28s_ease-out] sm:max-w-[980px] sm:rounded-[30px] sm:px-6 sm:pb-7 sm:pt-5"
         onClick={(e) => e.stopPropagation()}
       >
         <button
-          className="absolute top-3 right-3 w-9 h-9 border border-black/8 rounded-[18px] bg-white/92 backdrop-blur-[6px] text-[#4b5563] text-lg font-medium cursor-pointer flex items-center justify-center z-[3] shadow-[0_6px_18px_rgba(0,0,0,0.12)] transition-all duration-[180ms] hover:bg-white hover:text-[#111827] hover:-translate-y-[1px] hover:shadow-[0_10px_22px_rgba(0,0,0,0.16)]"
+          className="absolute right-4 top-4 z-[3] flex h-10 w-10 items-center justify-center rounded-full border border-[var(--line)] bg-white/90 text-lg font-medium text-[var(--text-base)] shadow-[0_10px_24px_rgba(56,32,16,0.12)] transition-all duration-200 hover:-translate-y-[1px] hover:bg-white hover:text-[var(--text-strong)]"
           onClick={onClose}
           aria-label="닫기"
         >
           ✕
         </button>
 
-        <img
-          className="w-full max-h-80 object-cover rounded-xl mb-[18px]"
-          src={resolveImage(recipe)}
-          alt={recipe.name}
-          onError={(e) => {
-            e.currentTarget.src = PLACEHOLDER;
-          }}
-        />
-
-        <h2 className="m-0 mb-3.5 text-2xl font-bold text-[#2c3e50]">{recipe.name}</h2>
-
-        <p className="m-0 mb-3">
-          <strong className="text-orange-main font-semibold">⏱️ 조리 시간:</strong> {recipe.cookTime}
-        </p>
-
-        <p className="mt-1 mb-3">
-          <strong className="text-orange-main font-semibold">🥘 재료:</strong>
-        </p>
-        <ul className="list-none p-0 my-2.5 mb-[18px] flex flex-wrap gap-2">
-          {(recipe.ingredients || []).map((ing, i) => (
-            <li
-              key={`${recipe.id}-${i}`}
-              className="text-orange-main px-3.5 py-1.5 rounded-[20px] text-[0.85em] font-medium border transition-all duration-200 hover:text-white hover:-translate-y-0.5"
-              style={{
-                background: 'linear-gradient(135deg, #ff994415 0%, #ff552215 100%)',
-                borderColor: '#ff994430'
+        <div className="grid gap-5 sm:gap-6 lg:grid-cols-[minmax(0,1.08fr)_minmax(320px,0.92fr)]">
+          <div className="overflow-hidden rounded-[24px] bg-[#eadfce]">
+            <img
+              className="max-h-[360px] w-full object-cover sm:max-h-[560px] lg:h-full lg:max-h-none"
+              src={resolveImage(recipe)}
+              alt={recipe.name}
+              onError={(e) => {
+                e.currentTarget.src = PLACEHOLDER;
               }}
-              onMouseEnter={(e) => {
-                e.currentTarget.style.background = 'linear-gradient(135deg, #ff9944 0%, #ff5522 100%)';
-              }}
-              onMouseLeave={(e) => {
-                e.currentTarget.style.background = 'linear-gradient(135deg, #ff994415 0%, #ff552215 100%)';
-              }}
-            >
-              {ing}
-            </li>
-          ))}
-        </ul>
+            />
+          </div>
 
-        <p className="mt-1 mb-3">
-          <strong className="text-orange-main font-semibold">📝 레시피:</strong>
-        </p>
-        <pre className="bg-[#f8f9fa] border border-[#e9ecef] p-4 rounded-xl whitespace-pre-wrap leading-[1.75] mt-2.5 font-sans text-[#495057]">
-          {recipe.recipeText || '상세 내용은 배포 데이터 동기화 후 표시됩니다.'}
-        </pre>
+          <div className="flex min-w-0 flex-col">
+            <div className="border-b border-[var(--line)] pb-5">
+              <p className="section-label mb-3">Recipe Detail</p>
+              <h2 className="text-strong m-0 text-[2rem] font-semibold leading-[1.15] tracking-[-0.04em] sm:text-[2.4rem]">
+                {recipe.name}
+              </h2>
+              <p className="text-base mt-4 text-sm leading-6 sm:text-base">
+                재료와 조리 흐름을 한 화면 안에서 차분하게 읽을 수 있도록 정리했습니다.
+              </p>
+
+              <div className="mt-5 grid gap-3 sm:grid-cols-2">
+                <div className="accent-wash rounded-[22px] px-4 py-3">
+                  <p className="section-label mb-2">Cook Time</p>
+                  <p className="text-accent text-lg font-semibold">{recipe.cookTime}</p>
+                </div>
+                <div className="rounded-[22px] bg-[var(--surface-muted)] px-4 py-3">
+                  <p className="section-label mb-2">Ingredients</p>
+                  <p className="text-strong text-lg font-semibold">{recipe.ingredients.length} items</p>
+                </div>
+              </div>
+            </div>
+
+            <section className="border-b border-[var(--line)] py-5">
+              <p className="section-label mb-3">Ingredients</p>
+              <ul className="flex list-none flex-wrap gap-2 p-0">
+                {(recipe.ingredients || []).map((ingredient, index) => (
+                  <li
+                    key={`${recipe.id}-${ingredient}-${index}`}
+                    className="ingredient-chip rounded-full px-3 py-1.5 text-sm"
+                  >
+                    {ingredient}
+                  </li>
+                ))}
+              </ul>
+            </section>
+
+            <section className="pt-5">
+              <p className="section-label mb-3">Method</p>
+              <pre className="text-base m-0 whitespace-pre-wrap rounded-[24px] bg-[#f8f3eb] p-4 font-sans text-sm leading-7 sm:p-5 sm:text-[15px]">
+                {recipe.recipeText || '상세 내용은 배포 데이터 동기화 후 표시됩니다.'}
+              </pre>
+            </section>
+          </div>
+        </div>
       </div>
     </div>
   );
