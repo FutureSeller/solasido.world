@@ -42,7 +42,7 @@ export function RecipeCard({ recipe, onOpen }: RecipeCardProps) {
           </div>
         </div>
 
-        <p className="text-base mb-4 text-sm leading-6">
+        <p className="text-base break-keep mb-4 text-sm leading-6">
           {previewIngredients.length > 0
             ? `${previewIngredients.join(' · ')}${recipe.ingredients.length > 3 ? ' 외 재료' : ''}`
             : '재료 정보는 상세 화면에서 확인할 수 있습니다.'}
