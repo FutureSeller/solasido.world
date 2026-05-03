@@ -28,21 +28,16 @@ export function RecipeCard({ recipe, onOpen }: RecipeCardProps) {
           }}
         />
         <div className="absolute inset-x-0 bottom-0 h-24 bg-gradient-to-t from-[#24170d]/55 to-transparent" />
-        <div className="absolute left-4 top-4 rounded-full bg-white/88 px-3 py-1 text-xs font-semibold tracking-[0.16em] text-[var(--accent-strong)]">
-          RECIPE
-        </div>
       </div>
 
       <div className="flex flex-1 flex-col p-5">
         <div className="mb-4 flex items-start justify-between gap-4">
           <div>
-            <p className="section-label mb-2">Dish Name</p>
-            <h2 className="text-strong m-0 text-[1.3rem] font-semibold leading-[1.32] tracking-[-0.03em]">
+            <h2 className="text-strong break-keep m-0 text-[1.3rem] font-semibold leading-[1.32] tracking-[-0.03em]">
               {recipe.name}
             </h2>
           </div>
           <div className="accent-wash shrink-0 rounded-[18px] px-3 py-2 text-right">
-            <p className="section-label mb-1">Cook Time</p>
             <p className="text-accent text-sm font-semibold">{recipe.cookTime}</p>
           </div>
         </div>
@@ -65,13 +60,6 @@ export function RecipeCard({ recipe, onOpen }: RecipeCardProps) {
             ))}
           </div>
         )}
-
-        <div className="mt-auto flex items-center justify-between border-t border-[var(--line)] pt-4">
-          <p className="text-soft text-sm">자세한 재료와 순서를 열어보기</p>
-          <span className="text-accent text-sm font-semibold transition-transform duration-200 group-hover:translate-x-1">
-            보기 →
-          </span>
-        </div>
       </div>
     </button>
   );
