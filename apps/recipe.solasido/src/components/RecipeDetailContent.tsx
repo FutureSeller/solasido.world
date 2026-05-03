@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import type { Recipe } from '../types/recipe';
 import { resolveImage } from '../lib/imageUtils';
 import { PLACEHOLDER } from '../lib/constants';
@@ -14,6 +15,18 @@ export function RecipeDetailContent({
   contentClassName = 'flex min-h-0 min-w-0 flex-col pr-1 lg:overflow-y-auto lg:overscroll-contain',
 }: RecipeDetailContentProps) {
   const hasSourceUrl = recipe.sourceUrl.trim().length > 0;
+  const [copied, setCopied] = useState(false);
+
+  const handleShare = async () => {
+    const url =
+      typeof window !== 'undefined'
+        ? window.location.href
+        : `https://recipe.solasido.world/recipes/${recipe.id}`;
+
+    await navigator.clipboard.writeText(url);
+    setCopied(true);
+    window.setTimeout(() => setCopied(false), 1600);
+  };
 
   return (
     <div className="grid min-h-0 gap-5 sm:gap-6 lg:h-full lg:grid-cols-[minmax(0,1.08fr)_minmax(320px,0.92fr)]">
@@ -43,6 +56,16 @@ export function RecipeDetailContent({
               <p className="section-label mb-2">Ingredients</p>
               <p className="text-strong text-lg font-semibold">{recipe.ingredients.length} items</p>
             </div>
+          </div>
+
+          <div className="mt-4">
+            <button
+              type="button"
+              onClick={() => void handleShare()}
+              className="surface-card inline-flex items-center gap-2 rounded-full px-4 py-2 text-sm font-medium text-[var(--text-base)] transition-all duration-200 hover:-translate-y-px hover:text-[var(--text-strong)]"
+            >
+              {copied ? '복사됨' : '공유하기'}
+            </button>
           </div>
 
           {hasSourceUrl && (
