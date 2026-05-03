@@ -128,29 +128,15 @@ export default function App() {
             <div className="absolute bottom-0 left-1/3 h-24 w-24 rounded-full bg-[#cf7b4c]/20 blur-3xl" />
           </div>
 
-          <div className="relative z-10 grid gap-6 lg:grid-cols-[minmax(0,1.15fr)_minmax(320px,0.85fr)] lg:items-end">
+          <div className="relative z-10">
             <div className="max-w-3xl">
               <p className="section-label mb-3">Recipe Library</p>
               <h1 className="text-strong m-0 max-w-[12ch] text-4xl font-semibold leading-tight tracking-[-0.04em] sm:text-5xl">
-                여우의 레시피를
-                <br />
-                편하게 찾는 화면
+                여우의 레시피
               </h1>
               <p className="text-base mt-4 max-w-2xl text-[15px] leading-7 sm:text-base">
-                이미지 몇 장만 훑는 리스트 대신, 찾고 싶은 재료와 조리 시간을 기준으로 빠르게
-                탐색하는 레시피 라이브러리로 정리했습니다.
-              </p>
-            </div>
-
-            <div className="surface-card rounded-[28px] p-4 sm:p-5">
-              <p className="section-label mb-2">Browse Mode</p>
-              <p className="text-strong text-lg font-semibold">
-                {isSearching ? 'Search' : 'Latest'}
-              </p>
-              <p className="text-soft mt-3 text-sm leading-6">
-                {isSearching
-                  ? `현재 "${query}" 기준으로 결과를 정리하고 있습니다.`
-                  : '레시피 이름이나 재료를 바로 검색해서 원하는 항목으로 좁힐 수 있습니다.'}
+                재료 이름이나 기억나는 단어로 검색해서 필요한 레시피만 차분하게 골라볼 수
+                있습니다.
               </p>
             </div>
           </div>
