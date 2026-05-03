@@ -101,29 +101,62 @@ function parseRowsInput() {
 
 function normalizeInputRow(raw) {
   const id = normalizeId(raw.id ?? raw.notionPageId ?? raw.notion_page_id);
-
   const name = String(raw.name ?? raw.title ?? raw['이름'] ?? '').trim();
-
-  const ingredientsRaw = raw.ingredients ?? raw['재료 목록'] ?? [];
-  const ingredients = Array.isArray(ingredientsRaw)
-    ? ingredientsRaw.map((x) => String(x).trim()).filter(Boolean)
-    : String(ingredientsRaw)
-        .split(',')
-        .map((x) => x.trim())
-        .filter(Boolean);
-
   const cookTime = String(raw.cookTime ?? raw.cook_time ?? raw['조리 시간'] ?? '').trim();
   const recipeText = String(raw.recipeText ?? raw.recipe_text ?? raw['레시피'] ?? '').trim();
+  const sourceUrl = String(raw.sourceUrl ?? raw.source_url ?? raw.url ?? raw['원본 링크'] ?? '').trim();
   const thumbnailSource = String(
     raw.thumbnailUrl ?? raw.thumbnail_url ?? raw.thumbnail ?? raw['썸네일'] ?? '',
   ).trim();
 
+  const tagsRaw = raw.tags ?? raw['태그'] ?? raw.categories ?? [];
+  const tags = Array.isArray(tagsRaw)
+    ? tagsRaw
+        .map((tag) => String(typeof tag === 'string' ? tag : tag?.displayText ?? tag?.value ?? '').trim())
+        .filter(Boolean)
+    : String(tagsRaw)
+        .split(',')
+        .map((tag) => tag.trim())
+        .filter(Boolean);
+
+  const ingredientsRaw = raw.ingredients ?? raw['재료 목록'] ?? [];
+  const ingredients = Array.isArray(ingredientsRaw)
+    ? ingredientsRaw
+        .map((ingredient) => {
+          if (typeof ingredient === 'string') {
+            const name = ingredient.trim();
+            return name ? { name, measureText: '', note: '' } : null;
+          }
+
+          if (!ingredient || typeof ingredient !== 'object') {
+            return null;
+          }
+
+          const name = String(ingredient.name ?? '').trim();
+          const measureText = String(ingredient.measureText ?? ingredient.measure_text ?? '').trim();
+          const note = String(ingredient.note ?? '').trim();
+
+          if (!name) {
+            return null;
+          }
+
+          return { name, measureText, note };
+        })
+        .filter(Boolean)
+    : String(ingredientsRaw)
+        .split(',')
+        .map((x) => x.trim())
+        .filter(Boolean)
+        .map((name) => ({ name, measureText: '', note: '' }));
+
   return {
     id,
     name,
-    ingredients: JSON.stringify(ingredients),
+    tags,
+    ingredients,
     cook_time: cookTime,
     recipe_text: recipeText,
+    source_url: sourceUrl,
     thumbnail_source: thumbnailSource,
   };
 }
@@ -131,24 +164,24 @@ function normalizeInputRow(raw) {
 function validateNormalizedRow(row) {
   if (!row.id) return { ok: false, reason: 'missing id' };
   if (!row.name) return { ok: false, reason: 'missing name' };
-
-  try {
-    const parsed = JSON.parse(row.ingredients);
-    if (!Array.isArray(parsed)) return { ok: false, reason: 'ingredients is not an array' };
-  } catch {
-    return { ok: false, reason: 'ingredients json parse failed' };
+  if (!Array.isArray(row.ingredients)) return { ok: false, reason: 'ingredients is not an array' };
+  if (row.ingredients.some((ingredient) => !ingredient?.name)) {
+    return { ok: false, reason: 'ingredient name missing' };
   }
 
   return { ok: true };
 }
 
 function assertSchema({ local = false } = {}) {
-  const rs = runD1Sql('PRAGMA table_info(recipes);', { local });
-  const cols = new Set((rs?.[0]?.results || []).map((r) => r.name));
-  const required = ['id', 'name', 'ingredients', 'cook_time', 'recipe_text', 'thumbnail_url'];
-  const missing = required.filter((c) => !cols.has(c));
-  if (missing.length) {
-    throw new Error(`recipes table schema mismatch. Missing columns: ${missing.join(', ')}`);
+  const requiredTables = ['recipes', 'recipe_tags', 'recipe_ingredients'];
+  const tableRs = runD1Sql(
+    `SELECT name FROM sqlite_master WHERE type = 'table' AND name IN (${requiredTables.map(sqlQuote).join(', ')});`,
+    { local },
+  );
+  const foundTables = new Set((tableRs?.[0]?.results || []).map((row) => row.name));
+  const missingTables = requiredTables.filter((name) => !foundTables.has(name));
+  if (missingTables.length) {
+    throw new Error(`recipe tables missing: ${missingTables.join(', ')}`);
   }
 }
 
@@ -219,18 +252,43 @@ async function resolveThumbnailUrl(row) {
 }
 
 function insertRecipe(row, { local = false } = {}) {
-  const sql = `
-INSERT INTO recipes (id, name, ingredients, cook_time, recipe_text, thumbnail_url)
+  const statements = [
+    `
+INSERT INTO recipes (id, name, cook_time, recipe_text, source_url, thumbnail_url)
 VALUES (
   ${sqlQuote(row.id)},
   ${sqlQuote(row.name)},
-  ${sqlQuote(row.ingredients)},
   ${sqlQuote(row.cook_time)},
   ${sqlQuote(row.recipe_text)},
+  ${sqlQuote(row.source_url)},
   ${sqlQuote(row.thumbnail_url)}
-);`.trim();
+);`.trim(),
+    ...row.tags.map(
+      (tag, index) => `
+INSERT INTO recipe_tags (id, recipe_id, tag, display_text, sort_order)
+VALUES (
+  ${sqlQuote(generateUuidV7())},
+  ${sqlQuote(row.id)},
+  ${sqlQuote(tag.toLowerCase())},
+  ${sqlQuote(tag)},
+  ${index}
+);`.trim(),
+    ),
+    ...row.ingredients.map(
+      (ingredient, index) => `
+INSERT INTO recipe_ingredients (id, recipe_id, name, measure_text, note, sort_order)
+VALUES (
+  ${sqlQuote(generateUuidV7())},
+  ${sqlQuote(row.id)},
+  ${sqlQuote(ingredient.name)},
+  ${sqlQuote(ingredient.measureText)},
+  ${sqlQuote(ingredient.note)},
+  ${index}
+);`.trim(),
+    ),
+  ];
 
-  runD1Sql(sql, { local });
+  runD1Sql(statements.join('\n'), { local });
 }
 
 async function main() {

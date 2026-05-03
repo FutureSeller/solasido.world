@@ -1,29 +1,23 @@
-import type { DBRecipe, Env } from './types.ts';
-import { transformRecipe } from './types.ts';
+import type { Env } from './types.ts';
+import { getRecipesByIds } from './types.ts';
 
 export const onRequestGet: PagesFunction<Env> = async (context) => {
   const id = context.params.id as string;
 
   try {
-    const result = await context.env.DB.prepare(
-      'SELECT * FROM recipes WHERE id = ?',
-    )
-      .bind(id)
-      .first<DBRecipe>();
+    const [recipe] = await getRecipesByIds(context.env.DB, [id]);
 
-    if (!result) {
+    if (!recipe) {
       return new Response(JSON.stringify({ error: 'Recipe not found' }), {
         status: 404,
         headers: { 'Content-Type': 'application/json' },
       });
     }
 
-    const recipe = transformRecipe(result);
-
     return new Response(JSON.stringify(recipe), {
       headers: {
         'Content-Type': 'application/json',
-        'Cache-Control': 'public, max-age=3600', // 1 hour
+        'Cache-Control': 'public, max-age=3600',
       },
     });
   } catch (error) {

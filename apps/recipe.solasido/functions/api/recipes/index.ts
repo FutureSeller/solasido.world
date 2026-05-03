@@ -1,52 +1,81 @@
-import type { DBRecipe, Env } from './types.ts';
-import { transformRecipe } from './types.ts';
+import type { Env, Recipe } from './types.ts';
+import { getRecipesByIds } from './types.ts';
+
+interface RecipeIdRow {
+  id: string;
+  created_at?: number | null;
+}
+
+interface CountRow {
+  count: number;
+}
 
 export const onRequestGet: PagesFunction<Env> = async (context) => {
   const { searchParams } = new URL(context.request.url);
-  const query = searchParams.get('q') || '';
+  const query = searchParams.get('q')?.trim() || '';
   const page = Number.parseInt(searchParams.get('page') || '1', 10);
   const limit = Number.parseInt(searchParams.get('limit') || '12', 10);
   const offset = (page - 1) * limit;
 
   try {
-    let recipesResult: D1Result<DBRecipe>;
-    let countResult: { count: number } | null;
+    let recipeIdRows: RecipeIdRow[] = [];
+    let countResult: CountRow | null;
 
-    if (query.trim()) {
-      // Use FTS5 full-text search when query is provided
-      recipesResult = await context.env.DB.prepare(
-        `SELECT r.* FROM recipes r
-         INNER JOIN recipes_fts fts ON r.rowid = fts.rowid
-         WHERE recipes_fts MATCH ?
+    if (query) {
+      const likePattern = `%${query}%`;
+
+      const recipeIdsResult = await context.env.DB.prepare(
+        `SELECT DISTINCT r.id, r.created_at
+         FROM recipes r
+         LEFT JOIN recipe_tags rt ON rt.recipe_id = r.id
+         LEFT JOIN recipe_ingredients ri ON ri.recipe_id = r.id
+         WHERE r.name LIKE ?
+            OR ri.name LIKE ?
+            OR COALESCE(ri.measure_text, '') LIKE ?
+            OR COALESCE(rt.display_text, '') LIKE ?
+            OR COALESCE(rt.tag, '') LIKE LOWER(?)
          ORDER BY r.created_at DESC
          LIMIT ? OFFSET ?`,
       )
-        .bind(query, limit, offset)
-        .all<DBRecipe>();
+        .bind(likePattern, likePattern, likePattern, likePattern, likePattern, limit, offset)
+        .all<RecipeIdRow>();
+
+      recipeIdRows = recipeIdsResult.results || [];
 
       countResult = await context.env.DB.prepare(
-        `SELECT COUNT(*) as count FROM recipes r
-         INNER JOIN recipes_fts fts ON r.rowid = fts.rowid
-         WHERE recipes_fts MATCH ?`,
+        `SELECT COUNT(DISTINCT r.id) as count
+         FROM recipes r
+         LEFT JOIN recipe_tags rt ON rt.recipe_id = r.id
+         LEFT JOIN recipe_ingredients ri ON ri.recipe_id = r.id
+         WHERE r.name LIKE ?
+            OR ri.name LIKE ?
+            OR COALESCE(ri.measure_text, '') LIKE ?
+            OR COALESCE(rt.display_text, '') LIKE ?
+            OR COALESCE(rt.tag, '') LIKE LOWER(?)`,
       )
-        .bind(query)
-        .first<{ count: number }>();
+        .bind(likePattern, likePattern, likePattern, likePattern, likePattern)
+        .first<CountRow>();
     } else {
-      // No search query - return all recipes
-      recipesResult = await context.env.DB.prepare(
-        'SELECT * FROM recipes ORDER BY created_at DESC LIMIT ? OFFSET ?',
+      const recipeIdsResult = await context.env.DB.prepare(
+        `SELECT id
+         FROM recipes
+         ORDER BY created_at DESC
+         LIMIT ? OFFSET ?`,
       )
         .bind(limit, offset)
-        .all<DBRecipe>();
+        .all<RecipeIdRow>();
+
+      recipeIdRows = recipeIdsResult.results || [];
 
       countResult = await context.env.DB.prepare(
         'SELECT COUNT(*) as count FROM recipes',
-      ).first<{ count: number }>();
+      ).first<CountRow>();
     }
 
+    const recipeIds = recipeIdRows.map((row) => row.id);
+    const recipes: Recipe[] = await getRecipesByIds(context.env.DB, recipeIds);
     const totalCount = countResult?.count || 0;
     const totalPages = Math.ceil(totalCount / limit);
-    const recipes = (recipesResult.results || []).map(transformRecipe);
 
     return new Response(
       JSON.stringify({
@@ -61,7 +90,7 @@ export const onRequestGet: PagesFunction<Env> = async (context) => {
       {
         headers: {
           'Content-Type': 'application/json',
-          'Cache-Control': 'public, max-age=300', // 5 minutes
+          'Cache-Control': 'public, max-age=300',
         },
       },
     );
