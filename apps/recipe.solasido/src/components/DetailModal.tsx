@@ -43,7 +43,6 @@ export function DetailModal({ recipe, onClose }: DetailModalProps) {
 
           <div className="flex min-w-0 flex-col">
             <div className="border-b border-[var(--line)] pb-5">
-              <p className="section-label mb-3">Recipe Detail</p>
               <h2 className="text-strong m-0 text-[2rem] font-semibold leading-[1.15] tracking-[-0.04em] sm:text-[2.4rem]">
                 {recipe.name}
               </h2>
