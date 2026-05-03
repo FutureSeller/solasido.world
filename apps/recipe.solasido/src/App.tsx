@@ -130,7 +130,6 @@ export default function App() {
 
           <div className="relative z-10">
             <div className="max-w-3xl">
-              <p className="section-label mb-3">Recipe Library</p>
               <h1 className="text-strong m-0 max-w-[12ch] text-4xl font-semibold leading-tight tracking-[-0.04em] sm:text-5xl">
                 여우의 레시피
               </h1>
