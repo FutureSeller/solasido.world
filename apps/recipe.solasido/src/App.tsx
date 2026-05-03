@@ -1,29 +1,36 @@
 import { Suspense, useEffect, useMemo, useRef, useState } from 'react';
 import { debounce } from 'es-toolkit';
+import { useQueryClient } from '@tanstack/react-query';
+import {
+  Routes,
+  Route,
+  useLocation,
+  useNavigate,
+  useParams,
+  type Location,
+} from 'react-router-dom';
 import { RecipeCard } from './components/RecipeCard';
 import { DetailModal } from './components/DetailModal';
+import { RecipeDetailPage } from './components/RecipeDetailPage';
 import { SearchBar } from './components/SearchBar';
 import { EmptyState } from './components/EmptyState';
 import { LoadingState } from './components/LoadingState';
 import { ErrorBoundary } from './components/ErrorBoundary';
+import { useRecipe } from './hooks/useRecipe';
 import { useRecipes } from './hooks/useRecipes';
-import { useKeyboardShortcut } from './hooks/useKeyboardShortcut';
-import { useBodyScrollLock } from './hooks/useBodyScrollLock';
 import { RECIPES_PER_PAGE, SEARCH_DEBOUNCE_MS } from './lib/constants';
 import type { Recipe } from './types/recipe';
 
-interface RecipeBrowserContentProps {
+interface RecipeListSectionProps {
   query: string;
   isSearching: boolean;
-  onRecipeOpen: (recipe: Recipe) => void;
 }
 
-function RecipeListSection({
-  query,
-  isSearching,
-  onRecipeOpen,
-}: RecipeBrowserContentProps) {
+function RecipeListSection({ query, isSearching }: RecipeListSectionProps) {
   const loadMoreRef = useRef<HTMLDivElement | null>(null);
+  const navigate = useNavigate();
+  const location = useLocation();
+  const queryClient = useQueryClient();
 
   const { recipes, loadingMore, hasNextPage, loadMore } = useRecipes(query, RECIPES_PER_PAGE);
 
@@ -45,6 +52,13 @@ function RecipeListSection({
     return () => observer.disconnect();
   }, [hasNextPage, loadMore]);
 
+  const handleRecipeOpen = (recipe: Recipe) => {
+    queryClient.setQueryData(['recipe', recipe.id], recipe);
+    navigate(`/recipes/${recipe.id}`, {
+      state: { backgroundLocation: location },
+    });
+  };
+
   return (
     <>
       {recipes.length === 0 ? (
@@ -56,7 +70,7 @@ function RecipeListSection({
             style={{ gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))' }}
           >
             {recipes.map((recipe) => (
-              <RecipeCard key={recipe.id} recipe={recipe} onOpen={onRecipeOpen} />
+              <RecipeCard key={recipe.id} recipe={recipe} onOpen={handleRecipeOpen} />
             ))}
           </div>
 
@@ -84,6 +98,25 @@ function RecipeListSection({
   );
 }
 
+function RecipeDetailModalRoute() {
+  const navigate = useNavigate();
+  const params = useParams();
+  const recipeId = params.id as string;
+
+  const { data: recipe } = useRecipe(recipeId);
+
+  return <DetailModal recipe={recipe} onClose={() => navigate(-1)} />;
+}
+
+function RecipeDetailPageRoute() {
+  const params = useParams();
+  const recipeId = params.id as string;
+
+  const { data: recipe } = useRecipe(recipeId);
+
+  return <RecipeDetailPage recipe={recipe} />;
+}
+
 function RecipesErrorState({ error }: { error: Error }) {
   return (
     <div className="surface-card rounded-[26px] px-5 py-8 text-center">
@@ -97,9 +130,8 @@ function RecipesErrorState({ error }: { error: Error }) {
   );
 }
 
-export default function App() {
+function RecipeListPage() {
   const [query, setQuery] = useState('');
-  const [selectedRecipe, setSelectedRecipe] = useState<Recipe | null>(null);
   const [debouncedQuery, setDebouncedQuery] = useState('');
   const isSearching = query.trim().length > 0;
   const updateDebouncedQuery = useMemo(
@@ -109,9 +141,6 @@ export default function App() {
       }, SEARCH_DEBOUNCE_MS),
     [],
   );
-
-  useKeyboardShortcut('Escape', () => setSelectedRecipe(null));
-  useBodyScrollLock(!!selectedRecipe);
 
   const handleQueryChange = (value: string) => {
     setQuery(value);
@@ -157,14 +186,50 @@ export default function App() {
               <RecipeListSection
                 query={debouncedQuery}
                 isSearching={isSearching}
-                onRecipeOpen={setSelectedRecipe}
               />
             </Suspense>
           </ErrorBoundary>
         </main>
       </div>
-
-      <DetailModal recipe={selectedRecipe} onClose={() => setSelectedRecipe(null)} />
     </div>
+  );
+}
+
+export default function App() {
+  const location = useLocation();
+  const state = location.state as { backgroundLocation?: Location } | null;
+  const backgroundLocation = state?.backgroundLocation;
+
+  return (
+    <>
+      <Routes location={backgroundLocation || location}>
+        <Route path="/" element={<RecipeListPage />} />
+        <Route
+          path="/recipes/:id"
+          element={
+            <ErrorBoundary fallback={(error) => <RecipesErrorState error={error} />}>
+              <Suspense fallback={<LoadingState />}>
+                <RecipeDetailPageRoute />
+              </Suspense>
+            </ErrorBoundary>
+          }
+        />
+      </Routes>
+
+      {backgroundLocation && (
+        <Routes>
+          <Route
+            path="/recipes/:id"
+            element={
+              <ErrorBoundary fallback={(error) => <RecipesErrorState error={error} />}>
+                <Suspense fallback={<LoadingState />}>
+                  <RecipeDetailModalRoute />
+                </Suspense>
+              </ErrorBoundary>
+            }
+          />
+        </Routes>
+      )}
+    </>
   );
 }
