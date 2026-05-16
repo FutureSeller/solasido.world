@@ -80,7 +80,6 @@ function ViewToggle({
         aria-label="그리드 보기"
       >
         <GridIcon />
-        <span>그리드</span>
       </button>
       <button
         type="button"
@@ -94,7 +93,6 @@ function ViewToggle({
         aria-label="목록 보기"
       >
         <ListIcon />
-        <span>목록</span>
       </button>
     </div>
   );
@@ -272,10 +270,7 @@ function RecipeListPage() {
           onClear={() => handleQueryChange('')}
         />
 
-        <div className="mt-4 flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
-          <p className="text-soft m-0 text-sm leading-6">
-            원하는 방식으로 레시피 목록을 볼 수 있습니다.
-          </p>
+        <div className="mt-4 flex justify-end">
           <ViewToggle view={view} onChange={handleViewChange} />
         </div>
 

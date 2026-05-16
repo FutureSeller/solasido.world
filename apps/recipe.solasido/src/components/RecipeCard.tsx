@@ -16,7 +16,7 @@ export function RecipeCard({ recipe, view, onOpen }: RecipeCardProps) {
   return (
     <button
       className={`surface-card group relative overflow-hidden rounded-[28px] border-none text-left transition-all duration-300 ease-[cubic-bezier(0.4,0,0.2,1)] hover:shadow-[0_28px_56px_rgba(56,32,16,0.12)] ${
-        isList ? 'flex items-stretch gap-0' : 'flex flex-col hover:-translate-y-1'
+        isList ? 'flex h-[132px] items-stretch gap-0 sm:h-[148px]' : 'flex flex-col hover:-translate-y-1'
       }`}
       onClick={() => onOpen(recipe)}
     >
@@ -24,7 +24,7 @@ export function RecipeCard({ recipe, view, onOpen }: RecipeCardProps) {
 
       <div
         className={`relative overflow-hidden bg-[#e9dfd2] ${
-          isList ? 'h-auto w-[120px] shrink-0 self-stretch sm:w-[180px]' : 'h-60 w-full'
+          isList ? 'h-full w-[92px] shrink-0 sm:w-[132px]' : 'h-60 w-full'
         }`}
       >
         <img
@@ -40,7 +40,7 @@ export function RecipeCard({ recipe, view, onOpen }: RecipeCardProps) {
         <div className="absolute inset-x-0 bottom-0 h-24 bg-gradient-to-t from-[#24170d]/55 to-transparent" />
       </div>
 
-      <div className={`flex flex-1 flex-col ${isList ? 'p-4 sm:p-5' : 'p-5'}`}>
+      <div className={`flex flex-1 flex-col ${isList ? 'p-3.5 sm:p-4' : 'p-5'}`}>
         <div className={`flex items-start justify-between gap-4 ${isList ? 'mb-3' : 'mb-4'}`}>
           <div>
             <h2
