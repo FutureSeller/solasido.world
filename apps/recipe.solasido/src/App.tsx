@@ -21,12 +21,86 @@ import { useRecipes } from './hooks/useRecipes';
 import { RECIPES_PER_PAGE, SEARCH_DEBOUNCE_MS } from './lib/constants';
 import type { Recipe } from './types/recipe';
 
+type RecipeListView = 'grid' | 'list';
+
 interface RecipeListSectionProps {
   query: string;
   isSearching: boolean;
+  view: RecipeListView;
 }
 
-function RecipeListSection({ query, isSearching }: RecipeListSectionProps) {
+function GridIcon() {
+  return (
+    <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" className="h-4 w-4">
+      <rect x="3" y="3" width="7" height="7" rx="1.5" />
+      <rect x="14" y="3" width="7" height="7" rx="1.5" />
+      <rect x="3" y="14" width="7" height="7" rx="1.5" />
+      <rect x="14" y="14" width="7" height="7" rx="1.5" />
+    </svg>
+  );
+}
+
+function ListIcon() {
+  return (
+    <svg
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      aria-hidden="true"
+      className="h-4 w-4"
+    >
+      <line x1="4" y1="7" x2="20" y2="7" strokeWidth="2" strokeLinecap="round" />
+      <line x1="4" y1="12" x2="20" y2="12" strokeWidth="2" strokeLinecap="round" />
+      <line x1="4" y1="17" x2="20" y2="17" strokeWidth="2" strokeLinecap="round" />
+    </svg>
+  );
+}
+
+function ViewToggle({
+  view,
+  onChange,
+}: {
+  view: RecipeListView;
+  onChange: (view: RecipeListView) => void;
+}) {
+  const baseClassName =
+    'inline-flex h-10 items-center justify-center gap-2 rounded-full border px-3.5 text-sm font-medium transition-all';
+
+  return (
+    <div className="surface-card inline-flex items-center rounded-full p-1">
+      <button
+        type="button"
+        className={`${baseClassName} ${
+          view === 'grid'
+            ? 'border-[var(--line)] bg-[#efe4d7] text-[#2f241a]'
+            : 'border-transparent text-[#6f5d4d] hover:border-[var(--line)] hover:text-[#4e3f32]'
+        }`}
+        onClick={() => onChange('grid')}
+        aria-pressed={view === 'grid'}
+        aria-label="그리드 보기"
+      >
+        <GridIcon />
+        <span>그리드</span>
+      </button>
+      <button
+        type="button"
+        className={`${baseClassName} ${
+          view === 'list'
+            ? 'border-[var(--line)] bg-[#efe4d7] text-[#2f241a]'
+            : 'border-transparent text-[#6f5d4d] hover:border-[var(--line)] hover:text-[#4e3f32]'
+        }`}
+        onClick={() => onChange('list')}
+        aria-pressed={view === 'list'}
+        aria-label="목록 보기"
+      >
+        <ListIcon />
+        <span>목록</span>
+      </button>
+    </div>
+  );
+}
+
+function RecipeListSection({ query, isSearching, view }: RecipeListSectionProps) {
   const loadMoreRef = useRef<HTMLDivElement | null>(null);
   const navigate = useNavigate();
   const location = useLocation();
@@ -66,11 +140,19 @@ function RecipeListSection({ query, isSearching }: RecipeListSectionProps) {
       ) : (
         <>
           <div
-            className="grid gap-5 animate-[fadeIn_0.55s_ease-out] sm:gap-6 xl:grid-cols-3"
-            style={{ gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))' }}
+            className={
+              view === 'grid'
+                ? 'grid gap-5 animate-[fadeIn_0.55s_ease-out] sm:gap-6 xl:grid-cols-3'
+                : 'flex flex-col gap-4 animate-[fadeIn_0.55s_ease-out] sm:gap-5'
+            }
+            style={
+              view === 'grid'
+                ? { gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))' }
+                : undefined
+            }
           >
             {recipes.map((recipe) => (
-              <RecipeCard key={recipe.id} recipe={recipe} onOpen={handleRecipeOpen} />
+              <RecipeCard key={recipe.id} recipe={recipe} view={view} onOpen={handleRecipeOpen} />
             ))}
           </div>
 
@@ -133,6 +215,7 @@ function RecipesErrorState({ error }: { error: Error }) {
 function RecipeListPage() {
   const [query, setQuery] = useState('');
   const [debouncedQuery, setDebouncedQuery] = useState('');
+  const [view, setView] = useState<RecipeListView>('grid');
   const isSearching = query.trim().length > 0;
   const updateDebouncedQuery = useMemo(
     () =>
@@ -145,6 +228,18 @@ function RecipeListPage() {
   const handleQueryChange = (value: string) => {
     setQuery(value);
     updateDebouncedQuery(value);
+  };
+
+  useEffect(() => {
+    const storedView = window.localStorage.getItem('recipe_list_view');
+    if (storedView === 'grid' || storedView === 'list') {
+      setView(storedView);
+    }
+  }, []);
+
+  const handleViewChange = (nextView: RecipeListView) => {
+    setView(nextView);
+    window.localStorage.setItem('recipe_list_view', nextView);
   };
 
   return (
@@ -160,7 +255,7 @@ function RecipeListPage() {
           <div className="relative z-10">
             <div className="max-w-3xl">
               <h1 className="text-strong m-0 max-w-[12ch] text-4xl font-semibold leading-tight tracking-[-0.04em] sm:text-5xl">
-                여우의 레시피
+                여우의 레시피 모음집
               </h1>
               <p className="text-base mt-4 max-w-2xl text-[15px] leading-7 sm:text-base">
                 재료 이름이나 기억나는 단어로 검색해서 필요한 레시피만 차분하게 골라볼 수
@@ -177,6 +272,13 @@ function RecipeListPage() {
           onClear={() => handleQueryChange('')}
         />
 
+        <div className="mt-4 flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
+          <p className="text-soft m-0 text-sm leading-6">
+            원하는 방식으로 레시피 목록을 볼 수 있습니다.
+          </p>
+          <ViewToggle view={view} onChange={handleViewChange} />
+        </div>
+
         <main className="mt-6">
           <ErrorBoundary
             resetKey={debouncedQuery.trim()}
@@ -186,6 +288,7 @@ function RecipeListPage() {
               <RecipeListSection
                 query={debouncedQuery}
                 isSearching={isSearching}
+                view={view}
               />
             </Suspense>
           </ErrorBoundary>
