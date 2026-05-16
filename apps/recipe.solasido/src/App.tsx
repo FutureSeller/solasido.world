@@ -252,7 +252,7 @@ function RecipeListPage() {
 
           <div className="relative z-10">
             <div className="max-w-3xl">
-              <h1 className="text-strong m-0 max-w-[12ch] text-4xl font-semibold leading-tight tracking-[-0.04em] sm:text-5xl">
+              <h1 className="text-strong m-0 text-4xl font-semibold leading-tight tracking-[-0.04em] sm:text-5xl">
                 여우의 레시피 모음집
               </h1>
               <p className="text-base mt-4 max-w-2xl text-[15px] leading-7 sm:text-base">
