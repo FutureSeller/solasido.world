@@ -250,7 +250,6 @@ function RecipeListPage() {
           </div>
 
           <div className="relative z-10 max-w-3xl">
-            <p className="section-label mb-3">Recipe Library</p>
             <div>
               <h1 className="text-strong m-0 text-[2.2rem] font-semibold leading-[1.08] tracking-[-0.04em] sm:text-[3rem]">
                 여우의 레시피 모음집
