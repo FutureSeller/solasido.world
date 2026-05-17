@@ -4,9 +4,9 @@
   :root {
     --page-bg: #f5efe6;
     --page-bg-soft: #fbf7f2;
-    --surface: rgba(255, 252, 247, 0.82);
+    --surface: rgba(255, 251, 246, 0.94);
     --surface-strong: #fffdf9;
-    --surface-muted: #f1e8dc;
+    --surface-muted: #f4ece2;
     --line: rgba(86, 61, 39, 0.12);
     --line-strong: rgba(86, 61, 39, 0.2);
     --text-strong: #2f241a;
@@ -55,28 +55,25 @@
   }
 
   .hero-panel {
-    background:
-      linear-gradient(135deg, rgba(255, 250, 244, 0.92) 0%, rgba(245, 235, 223, 0.88) 100%);
+    background: linear-gradient(180deg, rgba(255, 250, 244, 0.9) 0%, rgba(248, 239, 229, 0.86) 100%);
     border: 1px solid var(--line);
-    box-shadow: var(--shadow-soft);
-    backdrop-filter: blur(14px);
+    box-shadow: 0 12px 32px rgba(56, 32, 16, 0.06);
   }
 
   .surface-card {
     background: var(--surface);
     border: 1px solid var(--line);
-    box-shadow: var(--shadow-soft);
-    backdrop-filter: blur(12px);
+    box-shadow: 0 10px 26px rgba(56, 32, 16, 0.05);
   }
 
   .surface-card-strong {
     background: var(--surface-strong);
     border: 1px solid var(--line);
-    box-shadow: var(--shadow-card);
+    box-shadow: 0 16px 40px rgba(56, 32, 16, 0.08);
   }
 
   .accent-wash {
-    background: linear-gradient(135deg, rgba(201, 111, 59, 0.15) 0%, rgba(120, 146, 94, 0.12) 100%);
+    background: rgba(201, 111, 59, 0.08);
   }
 
   .text-strong {
@@ -104,7 +101,7 @@
   }
 
   .ingredient-chip {
-    background: var(--surface-muted);
+    background: rgba(244, 236, 226, 0.9);
     border: 1px solid var(--line);
     color: var(--text-base);
   }

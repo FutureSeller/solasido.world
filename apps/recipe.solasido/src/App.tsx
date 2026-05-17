@@ -244,20 +244,20 @@ function RecipeListPage() {
     <div className="min-h-screen pb-14">
       <div className="page-shell pt-5 sm:pt-7">
         <header className="hero-panel relative overflow-hidden rounded-[32px] px-5 py-6 sm:px-8 sm:py-8 lg:px-10 lg:py-10">
-          <div className="absolute inset-0 pointer-events-none opacity-80">
-            <div className="absolute -left-12 top-0 h-32 w-32 rounded-full bg-[#e6c7aa]/40 blur-3xl" />
-            <div className="absolute right-0 top-8 h-28 w-28 rounded-full bg-[#b9c79b]/30 blur-3xl" />
-            <div className="absolute bottom-0 left-1/3 h-24 w-24 rounded-full bg-[#cf7b4c]/20 blur-3xl" />
+          <div className="absolute inset-0 pointer-events-none opacity-70">
+            <div className="absolute left-0 top-0 h-24 w-24 rounded-full bg-[#e6c7aa]/28 blur-3xl" />
+            <div className="absolute bottom-0 right-10 h-20 w-20 rounded-full bg-[#cf7b4c]/12 blur-3xl" />
           </div>
 
-          <div className="relative z-10">
-            <div className="max-w-3xl">
-              <h1 className="text-strong m-0 text-4xl font-semibold leading-tight tracking-[-0.04em] sm:text-5xl">
+          <div className="relative z-10 max-w-3xl">
+            <p className="section-label mb-3">Recipe Library</p>
+            <div>
+              <h1 className="text-strong m-0 text-[2.2rem] font-semibold leading-[1.08] tracking-[-0.04em] sm:text-[3rem]">
                 여우의 레시피 모음집
               </h1>
-              <p className="text-base mt-4 max-w-2xl text-[15px] leading-7 sm:text-base">
-                재료 이름이나 기억나는 단어로 검색해서 필요한 레시피만 차분하게 골라볼 수
-                있습니다.
+              <p className="text-base mt-3 max-w-xl text-[15px] leading-7 sm:text-base">
+                재료 이름이나 기억나는 단어로 바로 좁혀서 보고, 필요한 레시피만 빠르게
+                고를 수 있습니다.
               </p>
             </div>
           </div>
@@ -270,11 +270,11 @@ function RecipeListPage() {
           onClear={() => handleQueryChange('')}
         />
 
-        <div className="mt-4 flex justify-end">
+        <div className="mt-5 flex justify-end">
           <ViewToggle view={view} onChange={handleViewChange} />
         </div>
 
-        <main className="mt-6">
+        <main className="mt-5">
           <ErrorBoundary
             resetKey={debouncedQuery.trim()}
             fallback={(error) => <RecipesErrorState error={error} />}

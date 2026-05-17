@@ -15,16 +15,14 @@ export function RecipeCard({ recipe, view, onOpen }: RecipeCardProps) {
 
   return (
     <button
-      className={`surface-card group relative overflow-hidden rounded-[28px] border-none text-left transition-all duration-300 ease-[cubic-bezier(0.4,0,0.2,1)] hover:shadow-[0_28px_56px_rgba(56,32,16,0.12)] ${
-        isList ? 'flex h-[132px] items-stretch gap-0 sm:h-[148px]' : 'flex flex-col hover:-translate-y-1'
+      className={`surface-card group relative overflow-hidden rounded-[24px] border-none text-left transition-all duration-300 ease-[cubic-bezier(0.4,0,0.2,1)] hover:shadow-[0_22px_42px_rgba(56,32,16,0.09)] ${
+        isList ? 'flex h-[128px] items-stretch gap-0 sm:h-[144px]' : 'flex flex-col hover:-translate-y-0.5'
       }`}
       onClick={() => onOpen(recipe)}
     >
-      <div className="pointer-events-none absolute inset-x-0 top-0 h-px bg-[linear-gradient(90deg,rgba(201,111,59,0),rgba(201,111,59,0.75),rgba(120,146,94,0.45),rgba(201,111,59,0))] opacity-0 transition-opacity duration-300 group-hover:opacity-100" />
-
       <div
         className={`relative overflow-hidden bg-[#e9dfd2] ${
-          isList ? 'h-full w-[92px] shrink-0 sm:w-[132px]' : 'h-60 w-full'
+          isList ? 'h-full w-[96px] shrink-0 sm:w-[128px]' : 'h-56 w-full'
         }`}
       >
         <img
@@ -41,26 +39,26 @@ export function RecipeCard({ recipe, view, onOpen }: RecipeCardProps) {
       </div>
 
       <div className={`flex flex-1 flex-col ${isList ? 'p-3.5 sm:p-4' : 'p-5'}`}>
-        <div className={`flex items-start justify-between gap-4 ${isList ? 'mb-3' : 'mb-4'}`}>
-          <div>
+        <div className={`flex items-start justify-between gap-4 ${isList ? 'mb-2.5' : 'mb-3.5'}`}>
+          <div className="min-w-0">
             <h2
               className={`text-strong break-keep m-0 font-semibold tracking-[-0.03em] ${
-                isList ? 'text-[1.08rem] leading-[1.38] sm:text-[1.2rem]' : 'text-[1.3rem] leading-[1.32]'
+                isList ? 'text-[1.02rem] leading-[1.35] sm:text-[1.14rem]' : 'text-[1.22rem] leading-[1.3]'
               }`}
             >
               {recipe.name}
             </h2>
           </div>
           <div
-            className={`accent-wash shrink-0 text-right ${isList ? 'rounded-[16px] px-2.5 py-1.5' : 'rounded-[18px] px-3 py-2'}`}
+            className={`shrink-0 border border-[var(--line)] bg-white/72 text-right ${isList ? 'rounded-[14px] px-2.5 py-1.5' : 'rounded-[16px] px-3 py-1.5'}`}
           >
-            <p className="text-accent text-sm font-semibold">{recipe.cookTime}</p>
+            <p className="text-accent text-[13px] font-semibold">{recipe.cookTime}</p>
           </div>
         </div>
 
         <p
           className={`text-base break-keep text-sm ${
-            isList ? 'mb-3 line-clamp-2 leading-[1.45] sm:leading-6' : 'mb-4 leading-6'
+            isList ? 'mb-3 line-clamp-2 leading-[1.45] sm:leading-6' : 'mb-3.5 leading-6'
           }`}
         >
           {previewIngredients.length > 0
@@ -69,11 +67,11 @@ export function RecipeCard({ recipe, view, onOpen }: RecipeCardProps) {
         </p>
 
         {previewTags.length > 0 && (
-          <div className={`flex flex-wrap gap-2 ${isList ? 'mt-auto' : 'mb-4'}`}>
+          <div className={`flex flex-wrap gap-1.5 ${isList ? 'mt-auto' : 'mb-1'}`}>
             {previewTags.map((tag, index) => (
               <span
                 key={`${recipe.id}-${tag}-${index}`}
-                className={`ingredient-chip rounded-full text-xs ${isList ? 'px-2.5 py-1' : 'px-3 py-1.5'}`}
+                className={`ingredient-chip rounded-full text-[11px] ${isList ? 'px-2.5 py-1' : 'px-2.5 py-1'}`}
               >
                 {tag}
               </span>

@@ -88,6 +88,8 @@ Get a single recipe by ID.
 
 Detailed notes: [DB_PATH_AND_SCHEMA.md](./DB_PATH_AND_SCHEMA.md)
 
+Design direction: [DESIGN_TONE.md](./DESIGN_TONE.md)
+
 ## Deployment
 
 ```bash

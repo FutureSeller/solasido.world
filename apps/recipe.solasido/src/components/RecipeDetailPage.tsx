@@ -14,7 +14,7 @@ export function RecipeDetailPage({ recipe }: RecipeDetailPageProps) {
       <div className="mb-5">
         <button
           onClick={() => navigate('/')}
-          className="surface-card rounded-full px-4 py-2 text-sm font-medium text-[var(--text-base)] transition-all duration-200 hover:-translate-y-px hover:text-[var(--text-strong)]"
+          className="rounded-full border border-[var(--line)] bg-white/76 px-4 py-2 text-sm font-medium text-[var(--text-base)] transition-all duration-200 hover:-translate-y-px hover:text-[var(--text-strong)]"
         >
           목록으로
         </button>
