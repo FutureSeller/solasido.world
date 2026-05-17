@@ -1,0 +1,30 @@
+{
+  "name": "world.solasido",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc --noEmit && vite build",
+    "preview": "wrangler pages dev dist",
+    "lint": "biome lint",
+    "format": "biome format --write",
+    "deploy": "pnpm build && wrangler pages deploy dist --project-name=world-solasido"
+  },
+  "dependencies": {
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1"
+  },
+  "devDependencies": {
+    "@biomejs/biome": "1.9.2",
+    "@cloudflare/workers-types": "^4.20250107.0",
+    "@tailwindcss/vite": "^4.1.18",
+    "@types/react": "^18.3.18",
+    "@types/react-dom": "^18.3.5",
+    "@vitejs/plugin-react": "^4.3.4",
+    "tailwindcss": "^4.1.18",
+    "typescript": "^5.8.2",
+    "vite": "^6.0.0",
+    "wrangler": "^4.64.0"
+  }
+}
