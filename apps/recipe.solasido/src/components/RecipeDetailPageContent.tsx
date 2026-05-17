@@ -3,17 +3,11 @@ import type { Recipe } from '../types/recipe';
 import { resolveImage } from '../lib/imageUtils';
 import { PLACEHOLDER } from '../lib/constants';
 
-interface RecipeDetailContentProps {
+interface RecipeDetailPageContentProps {
   recipe: Recipe;
-  imageClassName?: string;
-  contentClassName?: string;
 }
 
-export function RecipeDetailContent({
-  recipe,
-  imageClassName = 'h-[280px] sm:h-[340px] lg:h-full',
-  contentClassName = 'flex min-h-0 min-w-0 flex-col pr-1 lg:overflow-y-auto lg:overscroll-contain',
-}: RecipeDetailContentProps) {
+export function RecipeDetailPageContent({ recipe }: RecipeDetailPageContentProps) {
   const hasSourceUrl = recipe.sourceUrl.trim().length > 0;
   const [copied, setCopied] = useState(false);
 
@@ -30,7 +24,7 @@ export function RecipeDetailContent({
 
   return (
     <div className="grid min-h-0 gap-5 sm:gap-6 lg:h-full lg:grid-cols-[minmax(0,1.08fr)_minmax(320px,0.92fr)]">
-      <div className={`${imageClassName} overflow-hidden rounded-[24px] bg-[#eadfce]`}>
+      <div className="h-[280px] overflow-hidden rounded-[24px] bg-[#eadfce] sm:h-[380px] lg:h-full">
         <img
           className="h-full w-full object-cover"
           src={resolveImage(recipe)}
@@ -41,7 +35,7 @@ export function RecipeDetailContent({
         />
       </div>
 
-      <div className={contentClassName}>
+      <div className="flex min-h-0 min-w-0 flex-col">
         <div className="border-b border-[var(--line)] pb-5">
           <h1 className="text-strong m-0 text-[2rem] font-semibold leading-[1.15] tracking-[-0.04em] sm:text-[2.4rem]">
             {recipe.name}
