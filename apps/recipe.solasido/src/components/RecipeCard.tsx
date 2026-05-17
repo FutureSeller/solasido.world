@@ -39,7 +39,11 @@ export function RecipeCard({ recipe, view, onOpen }: RecipeCardProps) {
       </div>
 
       <div className={`flex flex-1 flex-col ${isList ? 'p-3.5 sm:p-4' : 'p-5'}`}>
-        <div className={`flex items-start justify-between gap-4 ${isList ? 'mb-2.5' : 'mb-3.5'}`}>
+        <div
+          className={`flex justify-between gap-4 ${
+            isList ? 'mb-2.5 items-start' : 'mb-3.5 items-center'
+          }`}
+        >
           <div className="min-w-0">
             <h2
               className={`text-strong break-keep m-0 font-semibold tracking-[-0.03em] ${
