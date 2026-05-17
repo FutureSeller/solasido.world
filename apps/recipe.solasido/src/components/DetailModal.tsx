@@ -1,7 +1,7 @@
 import { useBodyScrollLock } from '../hooks/useBodyScrollLock';
 import { useKeyboardShortcut } from '../hooks/useKeyboardShortcut';
 import type { Recipe } from '../types/recipe';
-import { RecipeDetailModalContent } from './RecipeDetailContent';
+import { RecipeDetailContent } from './RecipeDetailContent';
 
 interface DetailModalProps {
   recipe: Recipe | null;
@@ -35,7 +35,7 @@ export function DetailModal({ recipe, onClose }: DetailModalProps) {
           ✕
         </button>
 
-        <RecipeDetailModalContent recipe={recipe} />
+        <RecipeDetailContent recipe={recipe} />
       </div>
     </div>
   );

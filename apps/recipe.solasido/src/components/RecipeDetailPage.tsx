@@ -1,6 +1,6 @@
 import { useNavigate } from 'react-router-dom';
 import type { Recipe } from '../types/recipe';
-import { RecipeDetailPageContent } from './RecipeDetailContent';
+import { RecipeDetailContent } from './RecipeDetailContent';
 
 interface RecipeDetailPageProps {
   recipe: Recipe;
@@ -21,7 +21,11 @@ export function RecipeDetailPage({ recipe }: RecipeDetailPageProps) {
       </div>
 
       <div className="surface-card-strong rounded-[30px] p-4 sm:p-6 lg:p-7">
-        <RecipeDetailPageContent recipe={recipe} />
+        <RecipeDetailContent
+          recipe={recipe}
+          imageClassName="h-[280px] sm:h-[380px] lg:h-full"
+          contentClassName="flex min-h-0 min-w-0 flex-col"
+        />
       </div>
     </div>
   );
